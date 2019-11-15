@@ -1,9 +1,13 @@
 local mapa = {}
+local mapar = {}
 local tile_grass
 local tile_water
 local tile_sand
 local posCol = 2
 local posLin = 2
+local posColr = 27
+local posLinr = 2
+local img
 
 function LoadMap(Matriz)
     local file = io.open(Matriz, "r")
@@ -20,6 +24,17 @@ function LoadMap(Matriz)
     file:close()
 end
 
+function espelhaMatriz()
+    for l=1,19,1
+    do
+        mapar[l] = {}
+        for c=1,28,1
+        do
+            mapar[l][c] = mapa[l][29-c]
+        end
+    end
+end
+
 function love.load()
     love.window.setMode( 1792, 608, {resizable=false} )
     LoadMap("RPG_lua/Matriz.txt")
@@ -29,7 +44,17 @@ function love.load()
     heroiA = love.graphics.newImage("heroiA.png")
     heroiD = love.graphics.newImage("heroiD.png")
     muro = love.graphics.newImage("muro.png")
-    img = love.graphics.newImage("img.png")
+    img = love.graphics.newImage("imgad.png")
+    imgburaco = love.graphics.newImage("imgburaco.png")
+    imgburacoa = love.graphics.newImage("imgburacoa.png")
+    imga = love.graphics.newImage("imga.png")
+    imgaa = love.graphics.newImage("imgaa.png")
+    imgad = love.graphics.newImage("imgad.png")
+    imgaw = love.graphics.newImage("imgaw.png")
+    imgawwd = love.graphics.newImage("imgawwd.png")
+    imgawwdw = love.graphics.newImage("imgawwdw.png")
+    imgwd = love.graphics.newImage("imgwd.png")
+    imgawd = love.graphics.newImage("imgawd.png")
     portal = love.graphics.newImage("portal.png")
     piso = love.graphics.newImage("piso.png")
     feno = love.graphics.newImage("feno.png")
@@ -42,7 +67,7 @@ function love.draw()
     local tamanho = 32
     for linha=1,19,1
     do
-        for coluna=1,37,1
+        for coluna=1,29,1
         do
             
             if(mapa[linha][coluna] == "X")
@@ -79,12 +104,99 @@ function love.draw()
     love.graphics.draw(img, 896, 0)
 end
 
+function background()
+
+    if heroi == heroiA
+    then
+        matriz = mapar
+        lin = posLin
+        linMaisUm = posLin +1
+        linMenosUm = posLin -1
+
+        col = posColr
+        colMaisUm = posColr -1
+        colMaisDois = posColr -2
+    end
+
+    if heroi == heroiD
+    then
+        espelhaMatriz()
+        matriz = mapa
+        lin = posLin
+        linMaisUm = posLin +1
+        linMenosUm = posLin -1
+
+        col = posCol
+        colMaisUm = posCol +1
+        colMaisDois = posCol +2 
+
+    end
+
+    if heroi == heroiS
+    then
+        
+    end
+
+    if heroi == heroiW
+    then
+        
+    end
+    
+    print(matriz[linMenosUm][col])
+    print(matriz[lin][colMaisUm])
+    print(matriz[linMaisUm][col])
+    print(matriz[linMaisUm][colMaisUm])
+    print(matriz[linMenosUm][colMaisUm])
+    print(matriz[lin][colMaisDois])
+
+
+    if (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and 
+       (matriz[linMaisUm][colMaisUm] == "Y")  and (matriz[linMenosUm][colMaisUm] == "X")  and (matriz[lin][colMaisDois] == "Y")
+    then
+        img = imga
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and 
+        (matriz[linMaisUm][colMaisUm] == "X")  and (matriz[linMenosUm][colMaisUm] == "Y")  and (matriz[lin][colMaisDois] == "X")
+    then
+        img = imgawwdw
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and 
+        (matriz[linMaisUm][colMaisUm] == "Y")  and (matriz[linMenosUm][colMaisUm] == "X")  and (matriz[lin][colMaisDois] == "X")
+    then
+        img = imgawwd
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "Y") 
+    then
+        img = imgaa
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "C") and (matriz[linMaisUm][col] == "X") and
+        (matriz[lin][colMaisDois] == "Y")
+    then
+        img = imgburaco
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "C") and (matriz[linMaisUm][col] == "X") and
+        (matriz[lin][colMaisDois] == "X")
+    then
+        img = imgburacoa
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "X") and (matriz[linMaisUm][col] == "Y")
+    then
+        img = imgaw
+    elseif (matriz[linMenosUm][col] == "Y") and (matriz[lin][colMaisUm] == "X") and (matriz[linMaisUm][col] == "X")
+    then
+        img = imgwd
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "X") and (matriz[linMaisUm][col] == "X")
+    then
+        img = imgawd
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X")
+    then
+        img = imgad
+    end
+end
+
 function love.keypressed(key, scancode, isrepeat)
     if key == "d" then
         heroi = heroiD
         if mapa[posLin][posCol + 1] == "Y"
         then
             posCol = posCol + 1
+            posColr =   posColr -1
+            print(posCol , posColr)
+            background()
         end
         if mapa[posLin][posCol +1] == "B"
         then
@@ -95,6 +207,9 @@ function love.keypressed(key, scancode, isrepeat)
         if mapa[posLin][posCol - 1] == "Y"
         then
             posCol = posCol - 1
+            posColr = posColr +1
+            print(posCol , posColr)
+            background()
         end
         if mapa[posLin][posCol -1] == "B"
         then
