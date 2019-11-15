@@ -1,8 +1,5 @@
 local mapa = {}
 local mapar = {}
-local tile_grass
-local tile_water
-local tile_sand
 local posCol = 2
 local posLin = 2
 local posColr = 27
@@ -25,6 +22,7 @@ function LoadMap(Matriz)
 end
 
 function espelhaMatriz()
+    if 
     for l=1,19,1
     do
         mapar[l] = {}
@@ -32,6 +30,11 @@ function espelhaMatriz()
         do
             mapar[l][c] = mapa[l][29-c]
         end
+    end
+
+    for l=1,19,1
+    do
+        --print(mapar[l][1],mapar[l][2],mapar[l][3],mapar[l][4],mapar[l][5],mapar[l][6],mapar[l][7],mapar[l][8],mapar[l][9],mapar[l][10],mapar[l][11],mapar[l][12],mapar[l][13],mapar[l][14],mapar[l][15],mapar[l][16],mapar[l][17],mapar[l][18],mapar[l][19],mapar[l][20],mapar[l][21],mapar[l][22],mapar[l][23],mapar[l][24],mapar[l][25],mapar[l][26],mapar[l][27],mapar[l][28])
     end
 end
 
@@ -49,6 +52,8 @@ function love.load()
     imgburacoa = love.graphics.newImage("imgburacoa.png")
     imga = love.graphics.newImage("imga.png")
     imgaa = love.graphics.newImage("imgaa.png")
+    imga2 = love.graphics.newImage("imga2.png")
+    imgaa2 = love.graphics.newImage("imgaa2.png")
     imgad = love.graphics.newImage("imgad.png")
     imgaw = love.graphics.newImage("imgaw.png")
     imgawwd = love.graphics.newImage("imgawwd.png")
@@ -110,17 +115,15 @@ function background()
     then
         matriz = mapar
         lin = posLin
-        linMaisUm = posLin +1
-        linMenosUm = posLin -1
+        linMaisUm = posLin -1
+        linMenosUm = posLin +1
 
         col = posColr
-        colMaisUm = posColr -1
-        colMaisDois = posColr -2
-    end
+        colMaisUm = posColr +1
+        colMaisDois = posColr +2
 
-    if heroi == heroiD
+    elseif heroi == heroiD
     then
-        espelhaMatriz()
         matriz = mapa
         lin = posLin
         linMaisUm = posLin +1
@@ -128,18 +131,14 @@ function background()
 
         col = posCol
         colMaisUm = posCol +1
-        colMaisDois = posCol +2 
+        colMaisDois = posCol +2
 
-    end
-
-    if heroi == heroiS
+    elseif heroi == heroiS
     then
         
-    end
-
-    if heroi == heroiW
+    elseif heroi == heroiW
     then
-        
+
     end
     
     print(matriz[linMenosUm][col])
@@ -155,6 +154,10 @@ function background()
     then
         img = imga
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and 
+        (matriz[linMaisUm][colMaisUm] == "X")  and (matriz[linMenosUm][colMaisUm] == "Y")  and (matriz[lin][colMaisDois] == "Y")
+     then
+         img = imga2
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and 
         (matriz[linMaisUm][colMaisUm] == "X")  and (matriz[linMenosUm][colMaisUm] == "Y")  and (matriz[lin][colMaisDois] == "X")
     then
         img = imgawwdw
@@ -165,6 +168,9 @@ function background()
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "Y") 
     then
         img = imgaa
+    elseif (matriz[linMenosUm][col] == "Y") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") 
+    then
+        img = imgaa2
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "C") and (matriz[linMaisUm][col] == "X") and
         (matriz[lin][colMaisDois] == "Y")
     then
@@ -189,13 +195,15 @@ function background()
 end
 
 function love.keypressed(key, scancode, isrepeat)
+    espelhaMatriz()
     if key == "d" then
         heroi = heroiD
         if mapa[posLin][posCol + 1] == "Y"
         then
             posCol = posCol + 1
             posColr =   posColr -1
-            print(posCol , posColr)
+            print(posLin , posCol)
+            print(posLin , posColr)
             background()
         end
         if mapa[posLin][posCol +1] == "B"
@@ -208,7 +216,8 @@ function love.keypressed(key, scancode, isrepeat)
         then
             posCol = posCol - 1
             posColr = posColr +1
-            print(posCol , posColr)
+            print(posLin , posCol)
+            print(posLin , posColr)
             background()
         end
         if mapa[posLin][posCol -1] == "B"
