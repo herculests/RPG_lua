@@ -91,7 +91,12 @@ function love.load()
     heroiA = love.graphics.newImage("heroiA.png")
     heroiD = love.graphics.newImage("heroiD.png")
     muro = love.graphics.newImage("muro.png")
+    portalParede = love.graphics.newImage("portalParede.png")
+    portalaa = love.graphics.newImage("portalaa.png")
     img = love.graphics.newImage("imgad.png")
+    monstro3 = love.graphics.newImage("monstro3.png")
+    monstro2 = love.graphics.newImage("monstro2.png")
+    corredor2 = love.graphics.newImage("corredor2.png")
     imgburaco = love.graphics.newImage("imgburaco.png")
     imgburacoa = love.graphics.newImage("imgburacoa.png")
     imga = love.graphics.newImage("imga.png")
@@ -136,6 +141,10 @@ function love.draw()
             then
                 love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
                 love.graphics.draw(bauFechado, (tamanho*coluna-tamanho) + 3, (tamanho*linha-tamanho) + 3)
+            elseif(mapa[linha][coluna] == "M")
+            then
+                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
+                love.graphics.draw(monstro2, (tamanho*coluna-tamanho) + 3, (tamanho*linha-tamanho) + 3)
             elseif(mapa[linha][coluna] == "BA")
             then
                 love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
@@ -218,6 +227,10 @@ function background()
         (matriz[linMaisUm][colMaisUm] == "Y")  and (matriz[linMenosUm][colMaisUm] == "X")  and (matriz[lin][colMaisDois] == "X")
     then
         img = imgawwd
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and
+        (matriz[lin][colMaisDois] == "P")
+    then
+        img = portalaa
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "Y") 
     then
         img = imgaa
@@ -241,9 +254,24 @@ function background()
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "X") and (matriz[linMaisUm][col] == "X")
     then
         img = imgawd
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "P") and (matriz[linMaisUm][col] == "X")
+    then
+        img = portalParede
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "M") and (matriz[linMaisUm][col] == "X")
+    then
+        img = monstro3
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X")
     then
-        img = imgad
+        if img == imgad
+        then
+            img = corredor2
+
+        elseif img == corredor2
+        then
+            img = imgad
+        else
+            img = imgad
+        end
     end
 end
 
