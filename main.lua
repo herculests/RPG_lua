@@ -1,9 +1,10 @@
 local mapa = {}
 local mapar = {}
+local aux = {}
 local posCol = 2
 local posLin = 2
 local posColr = 27
-local posLinr = 2
+local posLinr = 18
 local img
 
 function LoadMap(Matriz)
@@ -22,20 +23,63 @@ function LoadMap(Matriz)
 end
 
 function espelhaMatriz()
-    if 
-    for l=1,19,1
-    do
-        mapar[l] = {}
-        for c=1,28,1
+    if heroi == heroiA
+    then
+        for l=1,19,1
         do
-            mapar[l][c] = mapa[l][29-c]
+            mapar[l] = {}
+            for c=1,28,1
+            do
+                mapar[l][c] = mapa[l][29-c]
+            end
+        end
+
+    elseif heroi == heroiW
+    then
+        for l=1,28,1
+        do
+            mapar[l] = {}
+            for c=1,19,1
+            do
+                if (mapa[c][l] == "X") or (mapa[c][l] == "Y") or (mapa[c][l] == "A") or (mapa[c][l] == "C") or (mapa[c][l] == "B") or (mapa[c][l] == "BA") or (mapa[c][l] == "P")
+                then
+                    mapar[l][c] = mapa[c][l]
+                end
+            end
+        end
+
+        for l=1,28,1
+        do
+            aux[l] = {}
+            for c=1,19,1
+            do
+                aux[l][c] = mapar[l][c]
+            end
+        end
+
+        for l=1,28,1
+        do
+            for c=1,19,1
+            do
+                mapar[l][c] = aux[l][20-c]
+            end
+        end
+        
+    elseif heroi == heroiS
+    then
+        for l=1,28,1
+        do
+            mapar[l] = {}
+            for c=1,19,1
+            do
+                if (mapa[c][l] == "X") or (mapa[c][l] == "Y") or (mapa[c][l] == "A") or (mapa[c][l] == "C") or (mapa[c][l] == "B") or (mapa[c][l] == "BA") or (mapa[c][l] == "P")
+                then
+                    mapar[l][c] = mapa[c][l]
+                end
+            end
         end
     end
 
-    for l=1,19,1
-    do
-        --print(mapar[l][1],mapar[l][2],mapar[l][3],mapar[l][4],mapar[l][5],mapar[l][6],mapar[l][7],mapar[l][8],mapar[l][9],mapar[l][10],mapar[l][11],mapar[l][12],mapar[l][13],mapar[l][14],mapar[l][15],mapar[l][16],mapar[l][17],mapar[l][18],mapar[l][19],mapar[l][20],mapar[l][21],mapar[l][22],mapar[l][23],mapar[l][24],mapar[l][25],mapar[l][26],mapar[l][27],mapar[l][28])
-    end
 end
 
 function love.load()
@@ -135,19 +179,28 @@ function background()
 
     elseif heroi == heroiS
     then
+        matriz = mapar
+        lin = posCol
+        linMaisUm = posCol -1
+        linMenosUm = posCol +1
+
+        col = posLin
+        colMaisUm = posLin +1
+        colMaisDois = posLin +2
         
     elseif heroi == heroiW
     then
+        matriz = mapar
+        lin = posCol
+        linMaisUm = posCol +1
+        linMenosUm = posCol -1
+
+        col = posLinr
+        colMaisUm = posLinr +1
+        colMaisDois = posLinr +2
 
     end
     
-    print(matriz[linMenosUm][col])
-    print(matriz[lin][colMaisUm])
-    print(matriz[linMaisUm][col])
-    print(matriz[linMaisUm][colMaisUm])
-    print(matriz[linMenosUm][colMaisUm])
-    print(matriz[lin][colMaisDois])
-
 
     if (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and 
        (matriz[linMaisUm][colMaisUm] == "Y")  and (matriz[linMenosUm][colMaisUm] == "X")  and (matriz[lin][colMaisDois] == "Y")
@@ -195,15 +248,13 @@ function background()
 end
 
 function love.keypressed(key, scancode, isrepeat)
-    espelhaMatriz()
+    
     if key == "d" then
         heroi = heroiD
         if mapa[posLin][posCol + 1] == "Y"
         then
             posCol = posCol + 1
             posColr =   posColr -1
-            print(posLin , posCol)
-            print(posLin , posColr)
             background()
         end
         if mapa[posLin][posCol +1] == "B"
@@ -212,12 +263,11 @@ function love.keypressed(key, scancode, isrepeat)
         end
     elseif key == "a" then
         heroi = heroiA
+        espelhaMatriz()
         if mapa[posLin][posCol - 1] == "Y"
         then
             posCol = posCol - 1
             posColr = posColr +1
-            print(posLin , posCol)
-            print(posLin , posColr)
             background()
         end
         if mapa[posLin][posCol -1] == "B"
@@ -226,9 +276,12 @@ function love.keypressed(key, scancode, isrepeat)
         end
     elseif key == "s" then
         heroi = heroiS
+        espelhaMatriz()
         if mapa[posLin + 1][posCol] == "Y"
         then
             posLin = posLin + 1
+            posLinr = posLinr - 1
+            background()
         end
         if mapa[posLin +1][posCol] == "B"
         then
@@ -236,9 +289,12 @@ function love.keypressed(key, scancode, isrepeat)
         end
     elseif key == "w" then
         heroi = heroiW
+        espelhaMatriz()
         if mapa[posLin - 1][posCol] == "Y"
         then
             posLin = posLin - 1
+            posLinr = posLinr + 1
+            background()
         end
         if mapa[posLin -1][posCol] == "B"
         then
