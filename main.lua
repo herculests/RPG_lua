@@ -112,6 +112,8 @@ function love.load()
     LoadMap("RPG_lua/Matriz.txt")
     LoadInv("RPG_lua/Inventario.txt")
     heroi = love.graphics.newImage("heroi.png")
+    bauabertoCorredor = love.graphics.newImage("bauabertoCorredor.png")
+    bauabertoCorredora = love.graphics.newImage("bauabertoCorredora.png")
     corredorChave = love.graphics.newImage("corredorChave.png")
     vazio = love.graphics.newImage("vazio.png")
     ww = love.graphics.newImage("ww.png")
@@ -374,6 +376,10 @@ function background()
         (matriz[lin][colMaisDois] == "B")
     then
         img = bauCorredoraa
+     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and
+        (matriz[lin][colMaisDois] == "BA")
+    then
+        img = bauabertoCorredora
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "B") and (matriz[linMaisUm][col] == "X")
     then
         img = bauCorredor
@@ -382,6 +388,10 @@ function background()
         linha2 = lin
         coluna2 = colMaisUm
         linha3 = linMaisUm
+    
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "BA") and (matriz[linMaisUm][col] == "X")
+    then
+        img = bauabertoCorredor
 
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "X") and (matriz[linMaisUm][col] == "Y")
     then
@@ -472,6 +482,8 @@ function love.keypressed(key, scancode, isrepeat)
                 do
                     if matrizInventario[l][c] == "K"
                     then
+                        img = bauabertoCorredor
+
                         if mapa[posLin-1][posCol] == "B" then
                             mapa[posLin-1][posCol] = "BA"
                         elseif mapa[posLin+1][posCol] == "B" then
