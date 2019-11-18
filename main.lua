@@ -1,4 +1,6 @@
 local mapa = {}
+local matriz = {}
+local matrizInventario = {}
 local mapar = {}
 local aux = {}
 local posCol = 2
@@ -6,6 +8,13 @@ local posLin = 2
 local posColr = 27
 local posLinr = 18
 local img
+local linha1 = 1
+local coluna1 = 1
+local linha2 = 1
+local coluna2 = 1
+local linha3 = 1
+
+
 
 function LoadMap(Matriz)
     local file = io.open(Matriz, "r")
@@ -21,6 +30,22 @@ function LoadMap(Matriz)
     end
     file:close()
 end
+
+function LoadInv(Inventario)
+    local file1 = io.open(Inventario, "r")
+    local x = 1
+    for linha in file1:lines() 
+    do
+        matrizInventario[x] = {}
+        for y=1, #linha, 1 
+        do
+            matrizInventario[x][y] = linha:sub(y,y)
+        end
+        x = x + 1
+    end
+    file1:close()
+end
+
 
 function espelhaMatriz()
     if heroi == heroiA
@@ -83,14 +108,25 @@ function espelhaMatriz()
 end
 
 function love.load()
-    love.window.setMode( 1792, 608, {resizable=false} )
+    love.window.setMode( 1792, 1000, {resizable=false} )
     LoadMap("RPG_lua/Matriz.txt")
+    LoadInv("RPG_lua/Inventario.txt")
     heroi = love.graphics.newImage("heroi.png")
+    corredorChave = love.graphics.newImage("corredorChave.png")
+    vazio = love.graphics.newImage("vazio.png")
+    ww = love.graphics.newImage("ww.png")
+    corote = love.graphics.newImage("corote.png")
+    coroteAgilidade = love.graphics.newImage("coroteAgilidade.png")
+    coroteVida = love.graphics.newImage("coroteVida.png")
+    chave = love.graphics.newImage("chave.png")
     heroiW = love.graphics.newImage("heroiW.png")
     heroiS = love.graphics.newImage("heroiS.png")
     heroiA = love.graphics.newImage("heroiA.png")
     heroiD = love.graphics.newImage("heroiD.png")
     muro = love.graphics.newImage("muro.png")
+    pergaminho = love.graphics.newImage("pergaminho.png")
+    inv = love.graphics.newImage("inv.png")
+    inventario = love.graphics.newImage("inventario.png")
     portalParede = love.graphics.newImage("portalParede.png")
     portalaa = love.graphics.newImage("portalaa.png")
     img = love.graphics.newImage("imgad.png")
@@ -113,8 +149,12 @@ function love.load()
     piso = love.graphics.newImage("piso.png")
     feno = love.graphics.newImage("feno.png")
     buraco = love.graphics.newImage("buraco.png")
+    bauCorredor = love.graphics.newImage("bauCorredor.png")
+    bauCorredoraa = love.graphics.newImage("bauCorredoraa.png")
     bauFechado = love.graphics.newImage("baufechado.png")
     bauAberto = love.graphics.newImage("bauAberto.png")
+    chaveMapa = love.graphics.newImage("chaveMapa.png")
+
 end
 
 function love.draw()
@@ -149,6 +189,10 @@ function love.draw()
             then
                 love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
                 love.graphics.draw(bauAberto, (tamanho*coluna-tamanho) + 3, (tamanho*linha-tamanho) + 3)
+            elseif(mapa[linha][coluna] == "K")
+            then
+                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
+                love.graphics.draw(chaveMapa, (tamanho*coluna-tamanho) + 6, (tamanho*linha-tamanho) + 6)
             elseif(mapa[linha][coluna] == "P")
             then
                 love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
@@ -159,7 +203,88 @@ function love.draw()
             end
         end
     end
+
+    local tamanho2 = 103
+
     love.graphics.draw(img, 896, 0)
+    love.graphics.draw(pergaminho, 0, 613)
+    love.graphics.draw(inventario, 1331, 608)
+    love.graphics.draw(inv, 1465, 608)
+
+    for l=1,3,1
+    do
+        for c=1,4,1
+        do
+            if(matrizInventario[l][c] == "V")
+            then
+                love.graphics.draw(vazio,tamanho2*c + 1262, tamanho2*l + 548)
+
+            elseif(matrizInventario[l][c] == "K")
+            then
+                love.graphics.draw(chave,tamanho2*c + 1262, tamanho2*l + 548)
+
+            elseif(matrizInventario[l][c] == "C")
+            then
+                love.graphics.draw(corote,tamanho2*c + 1262, tamanho2*l + 548)
+
+            elseif(matrizInventario[l][c] == "L")
+            then
+                love.graphics.draw(coroteVida,tamanho2*c + 1262, tamanho2*l + 548)
+            
+            elseif(matrizInventario[l][c] == "A")
+            then
+                love.graphics.draw(coroteAgilidade,tamanho2*c + 1262, tamanho2*l + 548)
+
+            elseif(matrizInventario[l][c] == "W")
+            then
+                love.graphics.draw(ww,tamanho2*c + 1262, tamanho2*l + 548)
+            end
+        end
+    end
+
+end
+
+function preencheInventario(item)
+    for l=1,3,1
+    do
+        for c=1,4,1
+        do
+            if matrizInventario[l][c] == "V"
+            then
+                matrizInventario[l][c] = item
+                return
+            end
+        end
+    end
+end
+
+math.randomseed(os.time())
+
+function SORTEIO()
+    N = math.random(1,5)
+    return N
+end
+
+function itensBau()
+    
+    for I = 1, 2 do
+        x = SORTEIO()
+        if x == 1 then
+            preencheInventario("K")
+
+        elseif x == 2 then
+            preencheInventario("C")
+
+        elseif x == 3 then
+            preencheInventario("L")
+
+        elseif x == 4 then
+            preencheInventario("A")
+
+        elseif x == 5 then
+            preencheInventario("W")
+        end
+    end
 end
 
 function background()
@@ -245,6 +370,19 @@ function background()
         (matriz[lin][colMaisDois] == "X")
     then
         img = imgburacoa
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and
+        (matriz[lin][colMaisDois] == "B")
+    then
+        img = bauCorredoraa
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "B") and (matriz[linMaisUm][col] == "X")
+    then
+        img = bauCorredor
+        linha1 = linMenosUm
+        coluna1 = col
+        linha2 = lin
+        coluna2 = colMaisUm
+        linha3 = linMaisUm
+
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "X") and (matriz[linMaisUm][col] == "Y")
     then
         img = imgaw
@@ -260,6 +398,14 @@ function background()
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "M") and (matriz[linMaisUm][col] == "X")
     then
         img = monstro3
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "K") and (matriz[linMaisUm][col] == "X")
+    then
+        img = corredorChave
+    elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][col] == "K") and (matriz[linMaisUm][col] == "X")
+    then
+        mapa[lin][col] = "Y"
+        preencheInventario("K")
+        img = imgad
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X")
     then
         if img == imgad
@@ -279,54 +425,72 @@ function love.keypressed(key, scancode, isrepeat)
     
     if key == "d" then
         heroi = heroiD
-        if mapa[posLin][posCol + 1] == "Y"
+        espelhaMatriz()
+        if (mapa[posLin][posCol + 1] == "Y") or (mapa[posLin][posCol + 1] == "K")
         then
             posCol = posCol + 1
             posColr =   posColr -1
             background()
         end
-        if mapa[posLin][posCol +1] == "B"
-        then
-            mapa[posLin][posCol +1] = "BA"
-        end
+
     elseif key == "a" then
         heroi = heroiA
         espelhaMatriz()
-        if mapa[posLin][posCol - 1] == "Y"
+        if (mapa[posLin][posCol - 1] == "Y") or (mapa[posLin][posCol - 1] == "K")
         then
             posCol = posCol - 1
             posColr = posColr +1
             background()
         end
-        if mapa[posLin][posCol -1] == "B"
-        then
-            mapa[posLin][posCol -1] = "BA"
-        end
+
     elseif key == "s" then
         heroi = heroiS
         espelhaMatriz()
-        if mapa[posLin + 1][posCol] == "Y"
+        if (mapa[posLin + 1][posCol] == "Y") or (mapa[posLin + 1][posCol] == "K")
         then
             posLin = posLin + 1
             posLinr = posLinr - 1
             background()
         end
-        if mapa[posLin +1][posCol] == "B"
-        then
-            mapa[posLin +1][posCol] = "BA"
-        end
+
     elseif key == "w" then
         heroi = heroiW
         espelhaMatriz()
-        if mapa[posLin - 1][posCol] == "Y"
+        if (mapa[posLin - 1][posCol] == "Y") or (mapa[posLin - 1][posCol] == "K")
         then
             posLin = posLin - 1
             posLinr = posLinr + 1
             background()
         end
-        if mapa[posLin -1][posCol] == "B"
+    
+    elseif key == "k" then
+        if (matriz[linha1][coluna1] == "X") and (matriz[linha2][coluna2] == "B") and (matriz[linha3][coluna1] == "X")
         then
-            mapa[posLin -1][posCol] = "BA"
+            for l=1,3,1
+            do
+                for c=1,4,1
+                do
+                    if matrizInventario[l][c] == "K"
+                    then
+                        if mapa[posLin-1][posCol] == "B" then
+                            mapa[posLin-1][posCol] = "BA"
+                        elseif mapa[posLin+1][posCol] == "B" then
+                            mapa[posLin+1][posCol] = "BA"
+                        elseif mapa[posLin][posCol-1] == "B" then
+                            mapa[posLin][posCol-1] = "BA"
+                        elseif mapa[posLin][posCol+1] == "B" then
+                            mapa[posLin][posCol+1] = "BA"
+                        end
+
+                        matrizInventario[l][c] = "V"
+                        itensBau()
+                        linha2 = 1
+                        coluna2 = 1
+                        return
+                    end
+                end
+            end
         end
+
     end
- end
+end
