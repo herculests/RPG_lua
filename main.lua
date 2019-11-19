@@ -13,6 +13,9 @@ local coluna1 = 1
 local linha2 = 1
 local coluna2 = 1
 local linha3 = 1
+local arma = "V"
+local capacete = "V"
+local estado = "movimento"
 
 
 
@@ -108,6 +111,9 @@ function espelhaMatriz()
 end
 
 function love.load()
+
+    love.keyboard.setKeyRepeat(true)
+
     love.window.setMode( 1792, 1000, {resizable=false} )
     LoadMap("RPG_lua/Matriz.txt")
     LoadInv("RPG_lua/Inventario.txt")
@@ -116,7 +122,14 @@ function love.load()
     bauabertoCorredora = love.graphics.newImage("bauabertoCorredora.png")
     corredorChave = love.graphics.newImage("corredorChave.png")
     vazio = love.graphics.newImage("vazio.png")
-    ww = love.graphics.newImage("ww.png")
+    capaceteFerro = love.graphics.newImage("capaceteFerro.png")
+    capaceteMadeira = love.graphics.newImage("capaceteMadeira.png")
+    touca = love.graphics.newImage("touca.png")
+    esqueleto = love.graphics.newImage("esqueleto.png")
+    espada = love.graphics.newImage("espada.png")
+    cajado = love.graphics.newImage("cajado.png")
+    machado = love.graphics.newImage("machado.png")
+    pergaminho2 = love.graphics.newImage("pergaminho2.png")
     corote = love.graphics.newImage("corote.png")
     coroteAgilidade = love.graphics.newImage("coroteAgilidade.png")
     coroteVida = love.graphics.newImage("coroteVida.png")
@@ -206,12 +219,53 @@ function love.draw()
         end
     end
 
-    local tamanho2 = 103
+    local tamanho2 = 90
 
     love.graphics.draw(img, 896, 0)
+    love.graphics.draw(pergaminho2, 896, 0)
     love.graphics.draw(pergaminho, 0, 613)
-    love.graphics.draw(inventario, 1331, 608)
-    love.graphics.draw(inv, 1465, 608)
+    love.graphics.draw(inventario, 1351, 640)
+    love.graphics.draw(inv, 1450, 633)
+    love.graphics.draw(esqueleto, 1010, 710)
+    love.graphics.printf( "COMANDOS", 80, 633, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
+    love.graphics.printf( "W - mover para frente", 80, 693, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( "S - mover para trás", 80, 733, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( "A - mover para esqueda", 80, 773, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( "D - mover para direita", 80, 813, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+
+    if(arma == "V")
+    then
+        love.graphics.draw(vazio, 1173, 760)
+    elseif(arma == "C")
+    then
+        love.graphics.draw(cajado, 1173, 760)
+    elseif(arma == "M")
+    then
+        love.graphics.draw(machado, 1173, 760)
+    elseif(arma == "E")
+    then
+        love.graphics.draw(espada, 1173, 760)
+    end
+
+    if(capacete == "V")
+    then
+        love.graphics.draw(vazio, 990, 662)
+    elseif(capacete == "M")
+    then
+        love.graphics.draw(capaceteMadeira, 990, 662)
+    elseif(capacete == "F")
+    then
+        love.graphics.draw(capaceteFerro, 990, 662)
+    elseif(capacete == "T")
+    then
+        love.graphics.draw(touca, 990, 662)
+    end
+
+
+    if(mapa[posLin][posCol+1] == "B") or (mapa[posLin+1][posCol] == "B") or (mapa[posLin-1][posCol] == "B") or (mapa[posLin][posCol-1] == "B") 
+    then
+        love.graphics.printf( "K - abre bau", 80, 853, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    end
 
     for l=1,3,1
     do
@@ -219,31 +273,27 @@ function love.draw()
         do
             if(matrizInventario[l][c] == "V")
             then
-                love.graphics.draw(vazio,tamanho2*c + 1262, tamanho2*l + 548)
+                love.graphics.draw(vazio,tamanho2*c + 1292, tamanho2*l + 590)
 
             elseif(matrizInventario[l][c] == "K")
             then
-                love.graphics.draw(chave,tamanho2*c + 1262, tamanho2*l + 548)
+                love.graphics.draw(chave,tamanho2*c + 1292, tamanho2*l + 590)
 
             elseif(matrizInventario[l][c] == "C")
             then
-                love.graphics.draw(corote,tamanho2*c + 1262, tamanho2*l + 548)
+                love.graphics.draw(corote,tamanho2*c + 1292, tamanho2*l + 590)
 
             elseif(matrizInventario[l][c] == "L")
             then
-                love.graphics.draw(coroteVida,tamanho2*c + 1262, tamanho2*l + 548)
+                love.graphics.draw(coroteVida,tamanho2*c + 1292, tamanho2*l + 590)
             
             elseif(matrizInventario[l][c] == "A")
             then
-                love.graphics.draw(coroteAgilidade,tamanho2*c + 1262, tamanho2*l + 548)
+                love.graphics.draw(coroteAgilidade,tamanho2*c + 1292, tamanho2*l + 590)
 
-            elseif(matrizInventario[l][c] == "W")
-            then
-                love.graphics.draw(ww,tamanho2*c + 1262, tamanho2*l + 548)
             end
         end
     end
-
 end
 
 function preencheInventario(item)
@@ -263,28 +313,34 @@ end
 math.randomseed(os.time())
 
 function SORTEIO()
-    N = math.random(1,5)
+    N = math.random(1,10)
     return N
 end
 
-function itensBau()
+function itensBauArmadura()
     
-    for I = 1, 2 do
+    for I = 1, 1 do
         x = SORTEIO()
         if x == 1 then
             preencheInventario("K")
-
         elseif x == 2 then
             preencheInventario("C")
-
         elseif x == 3 then
             preencheInventario("L")
-
         elseif x == 4 then
             preencheInventario("A")
-
         elseif x == 5 then
-            preencheInventario("W")
+            capacete = "T"
+        elseif x == 6 then
+            arma = "M"
+        elseif x == 7 then
+            capacete = "F"
+        elseif x == 8 then
+            arma = "C"
+        elseif x == 9 then
+            capacete = "M"
+        elseif x == 10 then
+            arma = "E"
         end
     end
 end
@@ -388,6 +444,8 @@ function background()
         linha2 = lin
         coluna2 = colMaisUm
         linha3 = linMaisUm
+
+        estado = "bau"
     
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "BA") and (matriz[linMaisUm][col] == "X")
     then
@@ -495,9 +553,11 @@ function love.keypressed(key, scancode, isrepeat)
                         end
 
                         matrizInventario[l][c] = "V"
-                        itensBau()
+                        itensBauArmadura()
                         linha2 = 1
                         coluna2 = 1
+
+                        estado = "movimento"
                         return
                     end
                 end
