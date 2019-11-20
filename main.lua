@@ -16,8 +16,9 @@ local linha3 = 1
 local arma = "V"
 local capacete = "V"
 local estado = "movimento"
+local confirma = "nada" 
 
-
+Player = require 'Player'
 
 function LoadMap(Matriz)
     local file = io.open(Matriz, "r")
@@ -117,58 +118,58 @@ function love.load()
     love.window.setMode( 1792, 1000, {resizable=false} )
     LoadMap("RPG_lua/Matriz.txt")
     LoadInv("RPG_lua/Inventario.txt")
-    heroi = love.graphics.newImage("heroi.png")
-    bauabertoCorredor = love.graphics.newImage("bauabertoCorredor.png")
-    bauabertoCorredora = love.graphics.newImage("bauabertoCorredora.png")
-    corredorChave = love.graphics.newImage("corredorChave.png")
-    vazio = love.graphics.newImage("vazio.png")
-    capaceteFerro = love.graphics.newImage("capaceteFerro.png")
-    capaceteMadeira = love.graphics.newImage("capaceteMadeira.png")
-    touca = love.graphics.newImage("touca.png")
-    esqueleto = love.graphics.newImage("esqueleto.png")
-    espada = love.graphics.newImage("espada.png")
-    cajado = love.graphics.newImage("cajado.png")
-    machado = love.graphics.newImage("machado.png")
-    pergaminho2 = love.graphics.newImage("pergaminho2.png")
-    corote = love.graphics.newImage("corote.png")
-    coroteAgilidade = love.graphics.newImage("coroteAgilidade.png")
-    coroteVida = love.graphics.newImage("coroteVida.png")
-    chave = love.graphics.newImage("chave.png")
-    heroiW = love.graphics.newImage("heroiW.png")
-    heroiS = love.graphics.newImage("heroiS.png")
-    heroiA = love.graphics.newImage("heroiA.png")
-    heroiD = love.graphics.newImage("heroiD.png")
-    muro = love.graphics.newImage("muro.png")
-    pergaminho = love.graphics.newImage("pergaminho.png")
-    inv = love.graphics.newImage("inv.png")
-    inventario = love.graphics.newImage("inventario.png")
-    portalParede = love.graphics.newImage("portalParede.png")
-    portalaa = love.graphics.newImage("portalaa.png")
-    img = love.graphics.newImage("imgad.png")
-    monstro3 = love.graphics.newImage("monstro3.png")
-    monstro2 = love.graphics.newImage("monstro2.png")
-    corredor2 = love.graphics.newImage("corredor2.png")
-    imgburaco = love.graphics.newImage("imgburaco.png")
-    imgburacoa = love.graphics.newImage("imgburacoa.png")
-    imga = love.graphics.newImage("imga.png")
-    imgaa = love.graphics.newImage("imgaa.png")
-    imga2 = love.graphics.newImage("imga2.png")
-    imgaa2 = love.graphics.newImage("imgaa2.png")
-    imgad = love.graphics.newImage("imgad.png")
-    imgaw = love.graphics.newImage("imgaw.png")
-    imgawwd = love.graphics.newImage("imgawwd.png")
-    imgawwdw = love.graphics.newImage("imgawwdw.png")
-    imgwd = love.graphics.newImage("imgwd.png")
-    imgawd = love.graphics.newImage("imgawd.png")
-    portal = love.graphics.newImage("portal.png")
-    piso = love.graphics.newImage("piso.png")
-    feno = love.graphics.newImage("feno.png")
-    buraco = love.graphics.newImage("buraco.png")
-    bauCorredor = love.graphics.newImage("bauCorredor.png")
-    bauCorredoraa = love.graphics.newImage("bauCorredoraa.png")
-    bauFechado = love.graphics.newImage("baufechado.png")
-    bauAberto = love.graphics.newImage("bauAberto.png")
-    chaveMapa = love.graphics.newImage("chaveMapa.png")
+    heroi = love.graphics.newImage("imagens/heroi.png")
+    bauabertoCorredor = love.graphics.newImage("imagens/bauabertoCorredor.png")
+    bauabertoCorredora = love.graphics.newImage("imagens/bauabertoCorredora.png")
+    corredorChave = love.graphics.newImage("imagens/corredorChave.png")
+    vazio = love.graphics.newImage("imagens/vazio.png")
+    capaceteFerro = love.graphics.newImage("imagens/capaceteFerro.png")
+    capaceteMadeira = love.graphics.newImage("imagens/capaceteMadeira.png")
+    touca = love.graphics.newImage("imagens/touca.png")
+    esqueleto = love.graphics.newImage("imagens/esqueleto.png")
+    espada = love.graphics.newImage("imagens/espada.png")
+    cajado = love.graphics.newImage("imagens/cajado.png")
+    machado = love.graphics.newImage("imagens/machado.png")
+    pergaminho2 = love.graphics.newImage("imagens/pergaminho2.png")
+    corote = love.graphics.newImage("imagens/corote.png")
+    coroteAgilidade = love.graphics.newImage("imagens/coroteAgilidade.png")
+    coroteVida = love.graphics.newImage("imagens/coroteVida.png")
+    chave = love.graphics.newImage("imagens/chave.png")
+    heroiW = love.graphics.newImage("imagens/heroiW.png")
+    heroiS = love.graphics.newImage("imagens/heroiS.png")
+    heroiA = love.graphics.newImage("imagens/heroiA.png")
+    heroiD = love.graphics.newImage("imagens/heroiD.png")
+    muro = love.graphics.newImage("imagens/muro.png")
+    pergaminho = love.graphics.newImage("imagens/pergaminho.png")
+    inv = love.graphics.newImage("imagens/inv.png")
+    inventario = love.graphics.newImage("imagens/inventario.png")
+    portalParede = love.graphics.newImage("imagens/portalParede.png")
+    portalaa = love.graphics.newImage("imagens/portalaa.png")
+    img = love.graphics.newImage("imagens/imgad.png")
+    monstro3 = love.graphics.newImage("imagens/monstro3.png")
+    monstro2 = love.graphics.newImage("imagens/monstro2.png")
+    corredor2 = love.graphics.newImage("imagens/corredor2.png")
+    imgburaco = love.graphics.newImage("imagens/imgburaco.png")
+    imgburacoa = love.graphics.newImage("imagens/imgburacoa.png")
+    imga = love.graphics.newImage("imagens/imga.png")
+    imgaa = love.graphics.newImage("imagens/imgaa.png")
+    imga2 = love.graphics.newImage("imagens/imga2.png")
+    imgaa2 = love.graphics.newImage("imagens/imgaa2.png")
+    imgad = love.graphics.newImage("imagens/imgad.png")
+    imgaw = love.graphics.newImage("imagens/imgaw.png")
+    imgawwd = love.graphics.newImage("imagens/imgawwd.png")
+    imgawwdw = love.graphics.newImage("imagens/imgawwdw.png")
+    imgwd = love.graphics.newImage("imagens/imgwd.png")
+    imgawd = love.graphics.newImage("imagens/imgawd.png")
+    portal = love.graphics.newImage("imagens/portal.png")
+    piso = love.graphics.newImage("imagens/piso.png")
+    feno = love.graphics.newImage("imagens/feno.png")
+    buraco = love.graphics.newImage("imagens/buraco.png")
+    bauCorredor = love.graphics.newImage("imagens/bauCorredor.png")
+    bauCorredoraa = love.graphics.newImage("imagens/bauCorredoraa.png")
+    bauFechado = love.graphics.newImage("imagens/baufechado.png")
+    bauAberto = love.graphics.newImage("imagens/bauAberto.png")
+    chaveMapa = love.graphics.newImage("imagens/chaveMapa.png")
 
 end
 
@@ -227,11 +228,19 @@ function love.draw()
     love.graphics.draw(inventario, 1351, 640)
     love.graphics.draw(inv, 1450, 633)
     love.graphics.draw(esqueleto, 1010, 710)
+
     love.graphics.printf( "COMANDOS", 80, 633, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
-    love.graphics.printf( "W - mover para frente", 80, 693, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf( "S - mover para trás", 80, 733, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf( "A - mover para esqueda", 80, 773, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf( "D - mover para direita", 80, 813, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+
+    if estado == "movimento"
+    then
+        love.graphics.printf( "W - mover para frente", 80, 693, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "S - mover para trás", 80, 733, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "A - mover para esqueda", 80, 773, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "D - mover para direita", 80, 813, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    elseif estado == "bau"
+    then
+        love.graphics.printf( "K - abre bau", 80, 853, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    end
 
     if(arma == "V")
     then
@@ -259,12 +268,6 @@ function love.draw()
     elseif(capacete == "T")
     then
         love.graphics.draw(touca, 990, 662)
-    end
-
-
-    if(mapa[posLin][posCol+1] == "B") or (mapa[posLin+1][posCol] == "B") or (mapa[posLin-1][posCol] == "B") or (mapa[posLin][posCol-1] == "B") 
-    then
-        love.graphics.printf( "K - abre bau", 80, 853, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
     end
 
     for l=1,3,1
@@ -322,25 +325,29 @@ function itensBauArmadura()
     for I = 1, 1 do
         x = SORTEIO()
         if x == 1 then
-            preencheInventario("K")
-        elseif x == 2 then
             preencheInventario("C")
-        elseif x == 3 then
+        elseif x == 2 then
             preencheInventario("L")
-        elseif x == 4 then
+        elseif x == 3 then
             preencheInventario("A")
+        elseif x == 4 then
+            --if capacete == "V" then
+                capacete = "T"
         elseif x == 5 then
-            capacete = "T"
+            --if arma == "V" then
+                arma = "M"
         elseif x == 6 then
-            arma = "M"
+            --if capacete == "V" then
+                capacete = "F"
         elseif x == 7 then
-            capacete = "F"
+            --if arma == "V" then
+                arma = "C"
         elseif x == 8 then
-            arma = "C"
+            --if capacete == "V" then
+                capacete = "M"
         elseif x == 9 then
-            capacete = "M"
-        elseif x == 10 then
-            arma = "E"
+            --if arma == "V" then
+                arma = "E"
         end
     end
 end
@@ -438,14 +445,13 @@ function background()
         img = bauabertoCorredora
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "B") and (matriz[linMaisUm][col] == "X")
     then
+        estado = "bau"
         img = bauCorredor
         linha1 = linMenosUm
         coluna1 = col
         linha2 = lin
         coluna2 = colMaisUm
         linha3 = linMaisUm
-
-        estado = "bau"
     
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "BA") and (matriz[linMaisUm][col] == "X")
     then
@@ -490,79 +496,88 @@ function background()
 end
 
 function love.keypressed(key, scancode, isrepeat)
-    
-    if key == "d" then
-        heroi = heroiD
-        espelhaMatriz()
-        if (mapa[posLin][posCol + 1] == "Y") or (mapa[posLin][posCol + 1] == "K")
-        then
-            posCol = posCol + 1
-            posColr =   posColr -1
-            background()
-        end
 
-    elseif key == "a" then
-        heroi = heroiA
-        espelhaMatriz()
-        if (mapa[posLin][posCol - 1] == "Y") or (mapa[posLin][posCol - 1] == "K")
-        then
-            posCol = posCol - 1
-            posColr = posColr +1
-            background()
-        end
+    if(estado == "movimento")
+    then
+        if key == "d" then
+            heroi = heroiD
+            espelhaMatriz()
+            if (mapa[posLin][posCol + 1] == "Y") or (mapa[posLin][posCol + 1] == "K")
+            then
+                posCol = posCol + 1
+                posColr =   posColr -1
+                background()
+            end
 
-    elseif key == "s" then
-        heroi = heroiS
-        espelhaMatriz()
-        if (mapa[posLin + 1][posCol] == "Y") or (mapa[posLin + 1][posCol] == "K")
-        then
-            posLin = posLin + 1
-            posLinr = posLinr - 1
-            background()
-        end
+        elseif key == "a" then
+            heroi = heroiA
+            espelhaMatriz()
+            if (mapa[posLin][posCol - 1] == "Y") or (mapa[posLin][posCol - 1] == "K")
+            then
+                posCol = posCol - 1
+                posColr = posColr +1
+                background()
+            end
 
-    elseif key == "w" then
-        heroi = heroiW
-        espelhaMatriz()
-        if (mapa[posLin - 1][posCol] == "Y") or (mapa[posLin - 1][posCol] == "K")
-        then
-            posLin = posLin - 1
-            posLinr = posLinr + 1
-            background()
-        end
-    
-    elseif key == "k" then
-        if (matriz[linha1][coluna1] == "X") and (matriz[linha2][coluna2] == "B") and (matriz[linha3][coluna1] == "X")
-        then
-            for l=1,3,1
-            do
-                for c=1,4,1
-                do
-                    if matrizInventario[l][c] == "K"
-                    then
-                        img = bauabertoCorredor
+        elseif key == "s" then
+            heroi = heroiS
+            espelhaMatriz()
+            if (mapa[posLin + 1][posCol] == "Y") or (mapa[posLin + 1][posCol] == "K")
+            then
+                posLin = posLin + 1
+                posLinr = posLinr - 1
+                background()
+            end
 
-                        if mapa[posLin-1][posCol] == "B" then
-                            mapa[posLin-1][posCol] = "BA"
-                        elseif mapa[posLin+1][posCol] == "B" then
-                            mapa[posLin+1][posCol] = "BA"
-                        elseif mapa[posLin][posCol-1] == "B" then
-                            mapa[posLin][posCol-1] = "BA"
-                        elseif mapa[posLin][posCol+1] == "B" then
-                            mapa[posLin][posCol+1] = "BA"
-                        end
-
-                        matrizInventario[l][c] = "V"
-                        itensBauArmadura()
-                        linha2 = 1
-                        coluna2 = 1
-
-                        estado = "movimento"
-                        return
-                    end
-                end
+        elseif key == "w" then
+            heroi = heroiW
+            espelhaMatriz()
+            if (mapa[posLin - 1][posCol] == "Y") or (mapa[posLin - 1][posCol] == "K")
+            then
+                posLin = posLin - 1
+                posLinr = posLinr + 1
+                background()
             end
         end
 
+    elseif(estado == "bau")
+    then
+        if key == "k" then
+            if (matriz[linha1][coluna1] == "X") and (matriz[linha2][coluna2] == "B") and (matriz[linha3][coluna1] == "X")
+            then
+                for l=1,3,1
+                do
+                    for c=1,4,1
+                    do
+                        if matrizInventario[l][c] == "K"
+                        then
+                            img = bauabertoCorredor
+
+                            if mapa[posLin-1][posCol] == "B" then
+                                mapa[posLin-1][posCol] = "BA"
+                            elseif mapa[posLin+1][posCol] == "B" then
+                                mapa[posLin+1][posCol] = "BA"
+                            elseif mapa[posLin][posCol-1] == "B" then
+                                mapa[posLin][posCol-1] = "BA"
+                            elseif mapa[posLin][posCol+1] == "B" then
+                                mapa[posLin][posCol+1] = "BA"
+                            end
+
+                            matrizInventario[l][c] = "V"
+                            itensBauArmadura()
+                            linha2 = 1
+                            coluna2 = 1
+
+                            estado = "movimento"
+                            return
+                        end
+                    end
+                end
+                estado = "movimento"
+            end
+        end
     end
 end
+-- para utilizar 
+
+--Map.idade=10
