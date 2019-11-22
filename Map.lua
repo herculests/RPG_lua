@@ -1,18 +1,17 @@
 local Map = {}
-
-local Map = {}
 Map.__index = Map
 
-function Map:new()
+function Map:new(nome, nivel, mapa)
   
   local map = {
-    
-    atributos = {
-
-    }
+        nome = nome,
+        nivel = nivel,
+        mapa = mapa,
     
   }
   setmetatable(map, Map)
   return map
     
 end
+
+return Map

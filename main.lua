@@ -13,12 +13,17 @@ local coluna1 = 1
 local linha2 = 1
 local coluna2 = 1
 local linha3 = 1
-local arma = "V"
-local capacete = "V"
 local estado = "movimento"
-local confirma = "nada" 
+local vitalidadeTotal = 300
+local xpTotal = 200
+
 
 Player = require 'Player'
+Stats = require 'Stats'
+Equipamento = require 'Equipamento'
+Blocks = require 'Blocks'
+Map = require 'Map'
+Enemy = require 'Enemy'
 
 function LoadMap(Matriz)
     local file = io.open(Matriz, "r")
@@ -52,84 +57,139 @@ end
 
 
 function espelhaMatriz()
-    if heroi == heroiA
-    then
-        for l=1,19,1
-        do
+    if heroi == heroiA then
+        for l=1,19,1 do
             mapar[l] = {}
-            for c=1,28,1
-            do
+            for c=1,28,1 do
                 mapar[l][c] = mapa[l][29-c]
             end
         end
 
-    elseif heroi == heroiW
-    then
-        for l=1,28,1
-        do
+    elseif heroi == heroiW then
+        for l=1,28,1 do
             mapar[l] = {}
-            for c=1,19,1
-            do
-                if (mapa[c][l] == "X") or (mapa[c][l] == "Y") or (mapa[c][l] == "A") or (mapa[c][l] == "C") or (mapa[c][l] == "B") or (mapa[c][l] == "BA") or (mapa[c][l] == "P")
-                then
-                    mapar[l][c] = mapa[c][l]
-                end
+            for c=1,19,1 do
+                 mapar[l][c] = mapa[c][l]
             end
         end
 
-        for l=1,28,1
-        do
+        for l=1,28,1 do
             aux[l] = {}
-            for c=1,19,1
-            do
+            for c=1,19,1 do
                 aux[l][c] = mapar[l][c]
             end
         end
 
-        for l=1,28,1
-        do
-            for c=1,19,1
-            do
+        for l=1,28,1 do
+            for c=1,19,1 do
                 mapar[l][c] = aux[l][20-c]
             end
         end
         
-    elseif heroi == heroiS
-    then
-        for l=1,28,1
-        do
+    elseif heroi == heroiS then
+        for l=1,28,1 do
             mapar[l] = {}
-            for c=1,19,1
-            do
-                if (mapa[c][l] == "X") or (mapa[c][l] == "Y") or (mapa[c][l] == "A") or (mapa[c][l] == "C") or (mapa[c][l] == "B") or (mapa[c][l] == "BA") or (mapa[c][l] == "P")
-                then
-                    mapar[l][c] = mapa[c][l]
-                end
+            for c=1,19,1 do
+                mapar[l][c] = mapa[c][l]
             end
         end
     end
 
 end
 
+function combatePE()
+
+    plyAtaque = playerUm.stats.ataque + playerUm.arma.ataque + playerUm.armadura.ataque
+    plyAcuracia = playerUm.stats.acuracia + playerUm.arma.acuracia + playerUm.armadura.acuracia
+    plyCritico = playerUm.stats.critico + playerUm.arma.critico + playerUm.armadura.critico
+    critico = 1
+
+    if math.random(1, 3) <= plyCritico then
+        critico = 2
+    end
+
+    if math.random(1, monstro.stats.destreza) <= plyAcuracia then
+        ataque = plyAtaque * critico - monstro.stats.defesa
+        ataque = math.max( ataque,0 )
+        monstro.vitalidade = monstro.vitalidade - ataque
+        print("Jogador ataca o inimigo, causando ", ataque," damage")
+
+    else
+        print("Jogador erra ataque.")
+    end
+
+end
+
+function combateEP()
+
+    plyDefesa = playerUm.stats.defesa + playerUm.arma.defesa + playerUm.armadura.defesa
+    plyDestreza = playerUm.stats.destreza + playerUm.arma.destreza + playerUm.armadura.destreza
+    critico = 1
+
+    if math.random(1, 3) <= monstro.stats.critico then
+        critico = 2
+    end
+
+    if math.random(1, plyDestreza) <= monstro.stats.acuracia then
+        ataque = monstro.atats.acuracia * critico - plyDefesa
+        ataque = math.max(ataque, 0)
+        playerUm.vitalidade = playerUm.vitalidade - ataque
+        print("Inimigo ataca o jogador, causando ", ataque," damage")
+
+    else
+        print("Inimigo erra ataque.")
+    end
+
+end
+
 function love.load()
+    LoadMap("RPG_lua/Matriz.txt")
+    mapa2 = Map:new("Pesadelo", 1, mapa)
+
+    blocks = Blocks:new()
+
+
+    --                     (ataque, defesa, acuracia, critico, destreza)
+    ststsEspada = Stats:new(50, 65, 32, 12, 21)
+    ststsCajado = Stats:new(50, 65, 32, 12, 21)
+    ststsMachado = Stats:new(50, 65, 32, 12, 21)
+    ststsArmFerro = Stats:new(50, 65, 32, 12, 21)
+    ststsArmMadeira = Stats:new(50, 65, 32, 12, 21)
+    ststsArmPano = Stats:new(50, 65, 32, 12, 21)
+    ststsMonstro = Stats:new(50, 65, 32, 12, 21)
+    ststsVazio = Stats:new(0, 0, 0, 0, 0)
+    ststsPlayer = Stats:new(24, 34, 52, 12, 32)
+
+
+    --                      (nome, img, stats)
+    espada = Equipamento:new("espada", "imagens/espada.png", ststsEspada)
+    cajado = Equipamento:new("cajado", "imagens/cajado.png", ststsCajado)
+    machado = Equipamento:new("machado", "imagens/machado.png", ststsMachado)
+    ArmFerro = Equipamento:new("ArmFerro", "imagens/capaceteFerro.png", ststsArmFerro)
+    ArmMadeira = Equipamento:new("ArmMadeira", "imagens/capaceteMadeira.png", ststsArmMadeira)
+    ArmPano = Equipamento:new("ArmPano", "imagens/touca.png", ststsArmPano)
+    vazio = Equipamento:new("vazio", "imagens/vazio.png", ststsVazio)
+
+
+    --                   (arma, armadura, stats)
+    playerUm = Player:new(vazio, vazio, ststsPlayer)
+
+
+    --                  (stats)
+    monstro = Enemy:new(ststsMonstro)
 
     love.keyboard.setKeyRepeat(true)
 
     love.window.setMode( 1792, 1000, {resizable=false} )
-    LoadMap("RPG_lua/Matriz.txt")
+    
     LoadInv("RPG_lua/Inventario.txt")
+
     heroi = love.graphics.newImage("imagens/heroi.png")
     bauabertoCorredor = love.graphics.newImage("imagens/bauabertoCorredor.png")
     bauabertoCorredora = love.graphics.newImage("imagens/bauabertoCorredora.png")
     corredorChave = love.graphics.newImage("imagens/corredorChave.png")
-    vazio = love.graphics.newImage("imagens/vazio.png")
-    capaceteFerro = love.graphics.newImage("imagens/capaceteFerro.png")
-    capaceteMadeira = love.graphics.newImage("imagens/capaceteMadeira.png")
-    touca = love.graphics.newImage("imagens/touca.png")
+    vazio1 = love.graphics.newImage("imagens/vazio.png")
     esqueleto = love.graphics.newImage("imagens/esqueleto.png")
-    espada = love.graphics.newImage("imagens/espada.png")
-    cajado = love.graphics.newImage("imagens/cajado.png")
-    machado = love.graphics.newImage("imagens/machado.png")
     pergaminho2 = love.graphics.newImage("imagens/pergaminho2.png")
     corote = love.graphics.newImage("imagens/corote.png")
     coroteAgilidade = love.graphics.newImage("imagens/coroteAgilidade.png")
@@ -139,7 +199,6 @@ function love.load()
     heroiS = love.graphics.newImage("imagens/heroiS.png")
     heroiA = love.graphics.newImage("imagens/heroiA.png")
     heroiD = love.graphics.newImage("imagens/heroiD.png")
-    muro = love.graphics.newImage("imagens/muro.png")
     pergaminho = love.graphics.newImage("imagens/pergaminho.png")
     inv = love.graphics.newImage("imagens/inv.png")
     inventario = love.graphics.newImage("imagens/inventario.png")
@@ -147,7 +206,6 @@ function love.load()
     portalaa = love.graphics.newImage("imagens/portalaa.png")
     img = love.graphics.newImage("imagens/imgad.png")
     monstro3 = love.graphics.newImage("imagens/monstro3.png")
-    monstro2 = love.graphics.newImage("imagens/monstro2.png")
     corredor2 = love.graphics.newImage("imagens/corredor2.png")
     imgburaco = love.graphics.newImage("imagens/imgburaco.png")
     imgburacoa = love.graphics.newImage("imagens/imgburacoa.png")
@@ -161,64 +219,23 @@ function love.load()
     imgawwdw = love.graphics.newImage("imagens/imgawwdw.png")
     imgwd = love.graphics.newImage("imagens/imgwd.png")
     imgawd = love.graphics.newImage("imagens/imgawd.png")
-    portal = love.graphics.newImage("imagens/portal.png")
-    piso = love.graphics.newImage("imagens/piso.png")
-    feno = love.graphics.newImage("imagens/feno.png")
-    buraco = love.graphics.newImage("imagens/buraco.png")
     bauCorredor = love.graphics.newImage("imagens/bauCorredor.png")
     bauCorredoraa = love.graphics.newImage("imagens/bauCorredoraa.png")
-    bauFechado = love.graphics.newImage("imagens/baufechado.png")
-    bauAberto = love.graphics.newImage("imagens/bauAberto.png")
-    chaveMapa = love.graphics.newImage("imagens/chaveMapa.png")
+
 
 end
 
 function love.draw()
     local tamanho = 32
-    for linha=1,19,1
-    do
-        for coluna=1,29,1
-        do
-            
-            if(mapa[linha][coluna] == "X")
-            then
-                love.graphics.draw(muro, tamanho*coluna-tamanho, tamanho*linha-tamanho)
-            elseif(mapa[linha][coluna] == "Y")
-            then
-                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
-            elseif(mapa[linha][coluna] == "A")
-            then
-                love.graphics.draw(feno, tamanho*coluna-tamanho, tamanho*linha-tamanho)
-            elseif(mapa[linha][coluna] == "C")
-            then
-                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
-                love.graphics.draw(buraco, tamanho*coluna-tamanho, tamanho*linha-tamanho)
-            elseif(mapa[linha][coluna] == "B")
-            then
-                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
-                love.graphics.draw(bauFechado, (tamanho*coluna-tamanho) + 3, (tamanho*linha-tamanho) + 3)
-            elseif(mapa[linha][coluna] == "M")
-            then
-                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
-                love.graphics.draw(monstro2, (tamanho*coluna-tamanho) + 3, (tamanho*linha-tamanho) + 3)
-            elseif(mapa[linha][coluna] == "BA")
-            then
-                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
-                love.graphics.draw(bauAberto, (tamanho*coluna-tamanho) + 3, (tamanho*linha-tamanho) + 3)
-            elseif(mapa[linha][coluna] == "K")
-            then
-                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
-                love.graphics.draw(chaveMapa, (tamanho*coluna-tamanho) + 6, (tamanho*linha-tamanho) + 6)
-            elseif(mapa[linha][coluna] == "P")
-            then
-                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
-                love.graphics.draw(portal, (tamanho*coluna-tamanho) + 1, (tamanho*linha-tamanho) + 1)
-            else
-                love.graphics.draw(piso,tamanho*coluna-tamanho, tamanho*linha-tamanho)
-                love.graphics.draw(heroi, tamanho*posCol-tamanho, tamanho*posLin-tamanho)
-            end
+
+    for linha=1,19,1 do
+        for coluna=1,28,1 do
+            love.graphics.draw(Blocks:get("Y"), tamanho*coluna-tamanho, tamanho*linha-tamanho)
+            love.graphics.draw(Blocks:get(mapa[linha][coluna]), tamanho*coluna-tamanho, tamanho*linha-tamanho)
         end
     end
+
+    love.graphics.draw(heroi, tamanho*posCol-tamanho, tamanho*posLin-tamanho)
 
     local tamanho2 = 90
 
@@ -229,46 +246,97 @@ function love.draw()
     love.graphics.draw(inv, 1450, 633)
     love.graphics.draw(esqueleto, 1010, 710)
 
-    love.graphics.printf( "COMANDOS", 80, 633, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
+    love.graphics.printf("Vitalidade:        /", 930, 40, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.vitalidade, 1060, 40, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( vitalidadeTotal, 1140, 40, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf("Poções: ", 930, 80, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( (playerUm.pocaoDano + playerUm.pocaoVida + playerUm.pocaoXp), 1030, 80, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf("Nível: ", 1550, 40, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.nivel, 1620, 40, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( "XP:        /", 1550, 80, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.xp, 1600, 80, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( xpTotal, 1665, 80, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
+
+    love.graphics.printf( "STATUS", 480, 673, 81, "left", 0, 3, 3, 0, 0, 0, 0 )
+    love.graphics.printf( "Força:            pts     +          +", 480, 723, 200, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( "Defesa:          pts     +          +", 480, 763, 200, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( "Acurácia:       pts     +          +", 480, 803, 200, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( "Destreza:       pts     +          +", 480, 843, 200, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( "Crítico:           pts    +          +", 480, 883, 200, "left", 0, 2, 2, 0, 0, 0, 0 )
+
+    love.graphics.printf( playerUm.arma.stats.ataque + playerUm.armadura.stats.ataque + playerUm.stats.ataque, 605, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.arma.stats.defesa + playerUm.armadura.stats.defesa + playerUm.stats.defesa, 605, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.arma.stats.acuracia + playerUm.armadura.stats.acuracia + playerUm.stats.acuracia, 605, 803, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.arma.stats.destreza + playerUm.armadura.stats.destreza + playerUm.stats.destreza, 605, 843, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.arma.stats.critico + playerUm.armadura.stats.critico + playerUm.stats.critico, 605, 883, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+
+    love.graphics.printf( "ARMA", 730, 683, 81, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.arma.stats.ataque, 750, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.arma.stats.defesa, 750, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.arma.stats.acuracia, 750, 803, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.arma.stats.destreza, 750, 843, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.arma.stats.critico, 750, 883, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+
+    love.graphics.printf( "ROUPA", 830, 683, 81, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.armadura.stats.ataque, 850, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.armadura.stats.defesa, 850, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.armadura.stats.acuracia, 850, 803, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.armadura.stats.destreza, 850, 843, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.armadura.stats.critico, 850, 883, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+
+    love.graphics.printf( "BASE", 940, 683, 81, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.stats.ataque, 960, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.stats.defesa, 960, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.stats.acuracia, 960, 803, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.stats.destreza, 960, 843, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.printf( playerUm.stats.critico, 960, 883, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
 
     if estado == "movimento"
     then
-        love.graphics.printf( "W - mover para frente", 80, 693, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - mover para trás", 80, 733, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "A - mover para esqueda", 80, 773, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "D - mover para direita", 80, 813, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "COMANDOS", 80, 673, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
+        love.graphics.printf( "W - Mover para frente", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "S - Mover para trás", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "A - Mover para esqueda", 80, 803, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "D - Mover para direita", 80, 843, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "I - Abrir Inventario", 80, 883, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    elseif estado == "inventario"
+    then
+        love.graphics.printf( "COMANDOS", 80, 673, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
+        love.graphics.printf( "X - Usar poção de XP", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "V - Usar poção de vida", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "A - Usar poção de ataque", 80, 803, 170, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "S - Sair do inventario", 80, 843, 170, "left", 0, 2, 2, 0, 0, 0, 0 )
     elseif estado == "bau"
     then
-        love.graphics.printf( "K - abre bau", 80, 853, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-    end
+        love.graphics.printf( "COMANDOS", 80, 673, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
+        love.graphics.printf( "K - abrir bau", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "S - sair ", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    elseif estado == "bauSemChave"
+    then
+        love.graphics.printf( "Você não possui chave para abrir o bau!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "S - sair para procurar uma chave", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    elseif estado == "combate"
+    then
+        love.graphics.printf( "BATALHA!!!", 80, 673, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
+        love.graphics.printf( "Z - Atacar", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "X - Fugir", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "C - Usar poção", 80, 803, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
 
-    if(arma == "V")
+    elseif estado == "vitoria"
     then
-        love.graphics.draw(vazio, 1173, 760)
-    elseif(arma == "C")
+        love.graphics.printf( "Você ganhou a batalha!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "S - sair para o labirinto", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    
+    elseif estado == "semPocao"
     then
-        love.graphics.draw(cajado, 1173, 760)
-    elseif(arma == "M")
-    then
-        love.graphics.draw(machado, 1173, 760)
-    elseif(arma == "E")
-    then
-        love.graphics.draw(espada, 1173, 760)
+        love.graphics.printf( "Você esta sem esse tipo de poção!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "S - continuar", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
     end
+    
 
-    if(capacete == "V")
-    then
-        love.graphics.draw(vazio, 990, 662)
-    elseif(capacete == "M")
-    then
-        love.graphics.draw(capaceteMadeira, 990, 662)
-    elseif(capacete == "F")
-    then
-        love.graphics.draw(capaceteFerro, 990, 662)
-    elseif(capacete == "T")
-    then
-        love.graphics.draw(touca, 990, 662)
-    end
+    love.graphics.draw(playerUm.arma.imgEquipamento, 1173, 760)
+
+    love.graphics.draw(playerUm.armadura.imgEquipamento, 990, 662)
 
     for l=1,3,1
     do
@@ -276,7 +344,7 @@ function love.draw()
         do
             if(matrizInventario[l][c] == "V")
             then
-                love.graphics.draw(vazio,tamanho2*c + 1292, tamanho2*l + 590)
+                love.graphics.draw(vazio1,tamanho2*c + 1292, tamanho2*l + 590)
 
             elseif(matrizInventario[l][c] == "K")
             then
@@ -326,28 +394,25 @@ function itensBauArmadura()
         x = SORTEIO()
         if x == 1 then
             preencheInventario("C")
+            playerUm.pocaoXp = playerUm.pocaoXp + 1
         elseif x == 2 then
             preencheInventario("L")
+            playerUm.pocaoVida = playerUm.pocaoVida + 1
         elseif x == 3 then
             preencheInventario("A")
+            playerUm.pocaoDano = playerUm.pocaoDano + 1
         elseif x == 4 then
-            --if capacete == "V" then
-                capacete = "T"
+                playerUm.armadura = ArmPano
         elseif x == 5 then
-            --if arma == "V" then
-                arma = "M"
+                playerUm.arma = machado
         elseif x == 6 then
-            --if capacete == "V" then
-                capacete = "F"
+                playerUm.armadura = ArmFerro
         elseif x == 7 then
-            --if arma == "V" then
-                arma = "C"
+                playerUm.arma = cajado
         elseif x == 8 then
-            --if capacete == "V" then
-                capacete = "M"
+                playerUm.armadura = ArmMadeira
         elseif x == 9 then
-            --if arma == "V" then
-                arma = "E"
+                playerUm.arma = espada
         end
     end
 end
@@ -472,6 +537,8 @@ function background()
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "M") and (matriz[linMaisUm][col] == "X")
     then
         img = monstro3
+        estado = "combate"
+
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "K") and (matriz[linMaisUm][col] == "X")
     then
         img = corredorChave
@@ -495,10 +562,22 @@ function background()
     end
 end
 
+function removeItem(item)
+
+    for l=1,3,1 do
+        for c=1,4,1 do
+            if matrizInventario[l][c] == item
+            then
+                matrizInventario[l][c] = "V"
+                return
+            end
+        end
+    end
+end
+
 function love.keypressed(key, scancode, isrepeat)
 
-    if(estado == "movimento")
-    then
+    if(estado == "movimento") then
         if key == "d" then
             heroi = heroiD
             espelhaMatriz()
@@ -538,19 +617,17 @@ function love.keypressed(key, scancode, isrepeat)
                 posLinr = posLinr + 1
                 background()
             end
+
+        elseif key == "i" then
+            estado = "inventario"
         end
 
-    elseif(estado == "bau")
-    then
+    elseif(estado == "bau") then
         if key == "k" then
-            if (matriz[linha1][coluna1] == "X") and (matriz[linha2][coluna2] == "B") and (matriz[linha3][coluna1] == "X")
-            then
-                for l=1,3,1
-                do
-                    for c=1,4,1
-                    do
-                        if matrizInventario[l][c] == "K"
-                        then
+            if (matriz[linha1][coluna1] == "X") and (matriz[linha2][coluna2] == "B") and (matriz[linha3][coluna1] == "X") then
+                for l=1,3,1 do
+                    for c=1,4,1 do
+                        if matrizInventario[l][c] == "K" then
                             img = bauabertoCorredor
 
                             if mapa[posLin-1][posCol] == "B" then
@@ -570,14 +647,104 @@ function love.keypressed(key, scancode, isrepeat)
 
                             estado = "movimento"
                             return
+                        else
+                            estado = "bauSemChave"
                         end
                     end
                 end
-                estado = "movimento"
             end
+        elseif key == "s" then
+            estado = "movimento"
+        end
+
+    elseif(estado == "bauSemChave")
+    then
+        if key == "s" then
+            estado = "movimento"
+        end
+
+    elseif estado == "inventario" then
+        if key == "x" then
+            if playerUm.pocaoXp > 0 then
+                playerUm.xp = playerUm.xp + 30
+                playerUm.pocaoXp = playerUm.pocaoXp - 1
+                removeItem("C")
+            else
+                estado = "semPocao"
+            end
+
+        elseif key == "v" then
+            if playerUm.pocaoVida > 0 then
+                playerUm.vitalidade = vitalidadeTotal
+                playerUm.pocaoVida = playerUm.pocaoVida - 1
+                removeItem("L")
+            else
+                estado = "semPocao"
+            end
+
+        elseif key == "a" then
+            if playerUm.pocaoDano > 0 then
+                playerUm.stats.ataque = playerUm.stats.ataque + 30
+                playerUm.pocaoDano = playerUm.pocaoDano -1
+                removeItem("A")
+            else
+                estado = "semPocao"
+            end
+
+        elseif key == "s" then
+            estado = "movimento"
+        end
+
+
+    elseif(estado == "semPocao") then
+        if key == "s" then
+            estado = "inventario"
+        end
+
+    elseif(estado == "combate")
+    then
+        if key == "z" then
+            while (playerUm.vitalidade > 0) or (monstro.vitalidade > 0) do
+                combatePE()
+                if monstro.vitalidade > 0 then
+                    combateEP()
+                end
+            end
+
+            if monstro.vitalidade <= 0 then
+                estado = "vitoria"
+            else
+                estado = "derrota"
+            end
+
+        elseif key == "x" then
+            while (playerUm.vitalidade > 0) or (monstro.vitalidade > 0) do
+                combateEP()
+                if monstro.vitalidade > 0 then
+                    combatePE()
+                end
+            end
+
+            if monstro.vitalidade <= 0 then
+                estado = "vitória"
+            else
+                estado = "derrota"
+            end
+        end
+
+    elseif(estado == "vitorio")
+    then
+        if mapa[posLin-1][posCol] == "M" then
+            mapa[posLin-1][posCol] = "Y"
+        elseif mapa[posLin+1][posCol] == "M" then
+            mapa[posLin+1][posCol] = "Y"
+        elseif mapa[posLin][posCol-1] == "M" then
+            mapa[posLin][posCol-1] = "Y"
+        elseif mapa[posLin][posCol+1] == "M" then
+            mapa[posLin][posCol+1] = "Y"
+        end
+        if key == "s" then
+            estado = "movimento"
         end
     end
 end
--- para utilizar 
-
---Map.idade=10
