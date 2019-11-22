@@ -10,8 +10,8 @@ function Player:new(arma, armadura, stats)
       pocaoVida = 0,
       pocaoXp = 0,
       pocaoDano = 0,
-      vitalidade = 100,
-      xp = 100,
+      vitalidade = 300,
+      xp = 0,
       nivel = 1,
 
       inventario = {

@@ -16,6 +16,7 @@ local linha3 = 1
 local estado = "movimento"
 local vitalidadeTotal = 300
 local xpTotal = 200
+local bauEquipamento
 
 
 Player = require 'Player'
@@ -150,25 +151,25 @@ function love.load()
 
 
     --                     (ataque, defesa, acuracia, critico, destreza)
-    ststsEspada = Stats:new(50, 65, 32, 12, 21)
-    ststsCajado = Stats:new(50, 65, 32, 12, 21)
-    ststsMachado = Stats:new(50, 65, 32, 12, 21)
-    ststsArmFerro = Stats:new(50, 65, 32, 12, 21)
-    ststsArmMadeira = Stats:new(50, 65, 32, 12, 21)
-    ststsArmPano = Stats:new(50, 65, 32, 12, 21)
-    ststsMonstro = Stats:new(50, 65, 32, 12, 21)
+    ststsEspada = Stats:new(25, 32, 32, 12, 21)
+    ststsCajado = Stats:new(25, 32, 32, 12, 21)
+    ststsMachado = Stats:new(25, 32, 32, 12, 21)
+    ststsArmFerro = Stats:new(25, 32, 32, 12, 21)
+    ststsArmMadeira = Stats:new(25, 32, 32, 12, 21)
+    ststsArmPano = Stats:new(25, 32, 32, 12, 21)
+    ststsMonstro = Stats:new(25, 32, 32, 12, 21)
     ststsVazio = Stats:new(0, 0, 0, 0, 0)
     ststsPlayer = Stats:new(24, 34, 52, 12, 32)
 
 
-    --                      (nome, img, stats)
-    espada = Equipamento:new("espada", "imagens/espada.png", ststsEspada)
-    cajado = Equipamento:new("cajado", "imagens/cajado.png", ststsCajado)
-    machado = Equipamento:new("machado", "imagens/machado.png", ststsMachado)
-    ArmFerro = Equipamento:new("ArmFerro", "imagens/capaceteFerro.png", ststsArmFerro)
-    ArmMadeira = Equipamento:new("ArmMadeira", "imagens/capaceteMadeira.png", ststsArmMadeira)
-    ArmPano = Equipamento:new("ArmPano", "imagens/touca.png", ststsArmPano)
-    vazio = Equipamento:new("vazio", "imagens/vazio.png", ststsVazio)
+    --                      (nome, img, stats, tipo)
+    espada = Equipamento:new("Espada", "imagens/espada.png", ststsEspada, "arma")
+    cajado = Equipamento:new("Cajado", "imagens/cajado.png", ststsCajado, "arma")
+    machado = Equipamento:new("Machado", "imagens/machado.png", ststsMachado, "arma")
+    ArmFerro = Equipamento:new("ArmaduraFerro", "imagens/capaceteFerro.png", ststsArmFerro, "armadura")
+    ArmMadeira = Equipamento:new("ArmaduraMadeira", "imagens/capaceteMadeira.png", ststsArmMadeira, "armadura")
+    ArmPano = Equipamento:new("ArmaduraFragil", "imagens/touca.png", ststsArmPano, "armadura")
+    vazio = Equipamento:new("vazio", "imagens/vazio.png", ststsVazio, "aleatório")
 
 
     --                   (arma, armadura, stats)
@@ -320,7 +321,6 @@ function love.draw()
         love.graphics.printf( "BATALHA!!!", 80, 673, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
         love.graphics.printf( "Z - Atacar", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
         love.graphics.printf( "X - Fugir", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "C - Usar poção", 80, 803, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
 
     elseif estado == "vitoria"
     then
@@ -330,8 +330,26 @@ function love.draw()
     elseif estado == "semPocao"
     then
         love.graphics.printf( "Você esta sem esse tipo de poção!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - continuar", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "S - Continuar", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+
+    elseif estado == "bauEquipamento"
+    then
+        love.graphics.printf( "Você encontrou um novo equipamento!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( bauEquipamento.nome, 80, 743, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "Força:", 80, 773, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( bauEquipamento.stats.ataque, 180, 773, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( "Defesa:", 80, 796, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( bauEquipamento.stats.defesa, 180, 796, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( "Acuracia:", 80, 819, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( bauEquipamento.stats.acuracia, 180, 819, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( "Critico:", 80, 842, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( bauEquipamento.stats.critico, 180, 842, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( "Destreza:", 80, 865, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( bauEquipamento.stats.destreza, 180, 865, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
+        love.graphics.printf( "X - Para substituir           S - Para sair.", 80, 898, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+
     end
+
     
 
     love.graphics.draw(playerUm.arma.imgEquipamento, 1173, 760)
@@ -383,37 +401,46 @@ end
 
 math.randomseed(os.time())
 
-function SORTEIO()
-    N = math.random(1,10)
+function SORTEIO(ate)
+    N = math.random(1,ate)
     return N
 end
 
 function itensBauArmadura()
     
-    for I = 1, 1 do
-        x = SORTEIO()
-        if x == 1 then
-            preencheInventario("C")
-            playerUm.pocaoXp = playerUm.pocaoXp + 1
-        elseif x == 2 then
-            preencheInventario("L")
-            playerUm.pocaoVida = playerUm.pocaoVida + 1
-        elseif x == 3 then
-            preencheInventario("A")
-            playerUm.pocaoDano = playerUm.pocaoDano + 1
-        elseif x == 4 then
-                playerUm.armadura = ArmPano
-        elseif x == 5 then
-                playerUm.arma = machado
-        elseif x == 6 then
-                playerUm.armadura = ArmFerro
-        elseif x == 7 then
-                playerUm.arma = cajado
-        elseif x == 8 then
-                playerUm.armadura = ArmMadeira
-        elseif x == 9 then
-                playerUm.arma = espada
-        end
+    x = SORTEIO(3)
+    if x == 1 then
+        preencheInventario("C")
+        playerUm.pocaoXp = playerUm.pocaoXp + 1
+        estado = "movimento"
+    elseif x == 2 then
+        preencheInventario("L")
+        playerUm.pocaoVida = playerUm.pocaoVida + 1
+        estado = "movimento"
+    elseif x == 3 then
+        preencheInventario("A")
+        playerUm.pocaoDano = playerUm.pocaoDano + 1
+        estado = "movimento"
+    end
+    x = SORTEIO(6)
+    if x == 1 then
+        bauEquipamento = ArmPano
+        estado = "bauEquipamento"
+    elseif x == 2 then
+        bauEquipamento = machado
+        estado = "bauEquipamento"
+    elseif x == 3 then
+        bauEquipamento = ArmFerro
+        estado = "bauEquipamento"
+    elseif x == 4 then
+        bauEquipamento = cajado
+        estado = "bauEquipamento"
+    elseif x == 5 then
+        bauEquipamento = ArmMadeira
+        estado = "bauEquipamento"
+    elseif x == 6 then
+        bauEquipamento = espada
+        estado = "bauEquipamento"
     end
 end
 
@@ -624,32 +651,27 @@ function love.keypressed(key, scancode, isrepeat)
 
     elseif(estado == "bau") then
         if key == "k" then
-            if (matriz[linha1][coluna1] == "X") and (matriz[linha2][coluna2] == "B") and (matriz[linha3][coluna1] == "X") then
-                for l=1,3,1 do
-                    for c=1,4,1 do
-                        if matrizInventario[l][c] == "K" then
-                            img = bauabertoCorredor
+            for l=1,3,1 do
+                for c=1,4,1 do
+                    if matrizInventario[l][c] == "K" then
+                        img = bauabertoCorredor
 
-                            if mapa[posLin-1][posCol] == "B" then
-                                mapa[posLin-1][posCol] = "BA"
-                            elseif mapa[posLin+1][posCol] == "B" then
-                                mapa[posLin+1][posCol] = "BA"
-                            elseif mapa[posLin][posCol-1] == "B" then
-                                mapa[posLin][posCol-1] = "BA"
-                            elseif mapa[posLin][posCol+1] == "B" then
-                                mapa[posLin][posCol+1] = "BA"
-                            end
-
-                            matrizInventario[l][c] = "V"
-                            itensBauArmadura()
-                            linha2 = 1
-                            coluna2 = 1
-
-                            estado = "movimento"
-                            return
-                        else
-                            estado = "bauSemChave"
+                        if mapa[posLin-1][posCol] == "B" then
+                            mapa[posLin-1][posCol] = "BA"
+                        elseif mapa[posLin+1][posCol] == "B" then
+                            mapa[posLin+1][posCol] = "BA"
+                        elseif mapa[posLin][posCol-1] == "B" then
+                            mapa[posLin][posCol-1] = "BA"
+                        elseif mapa[posLin][posCol+1] == "B" then
+                            mapa[posLin][posCol+1] = "BA"
                         end
+
+                        matrizInventario[l][c] = "V"
+                        itensBauArmadura()    
+                        return
+
+                    else
+                        estado = "bauSemChave"
                     end
                 end
             end
@@ -732,7 +754,7 @@ function love.keypressed(key, scancode, isrepeat)
             end
         end
 
-    elseif(estado == "vitorio")
+    elseif(estado == "vitoria")
     then
         if mapa[posLin-1][posCol] == "M" then
             mapa[posLin-1][posCol] = "Y"
@@ -744,6 +766,22 @@ function love.keypressed(key, scancode, isrepeat)
             mapa[posLin][posCol+1] = "Y"
         end
         if key == "s" then
+            estado = "movimento"
+        end
+
+    elseif(estado == "derrota")
+    then
+
+    elseif(estado == "bauEquipamento")
+    then
+        if key == "x" then
+            if bauEquipamento.tipo == "arma" then
+                playerUm.arma = bauEquipamento
+            else
+                playerUm.armadura = bauEquipamento
+            end
+            estado = "movimento"
+        elseif key == "s" then
             estado = "movimento"
         end
     end
