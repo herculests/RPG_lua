@@ -14,6 +14,8 @@ local vitalidadeTotal = 300
 local xpTotal = 200
 local bauEquipamento
 local portal = 1
+local fundo
+local aa
 
 
 Player = require 'Player'
@@ -109,6 +111,8 @@ function espelhaMatriz()
     end
 
 end
+
+
 
 function atualizaXp(xp)
     playerUm.xp = playerUm.xp + xp
@@ -221,12 +225,15 @@ function love.load()
     bauabertoCorredora = love.graphics.newImage("imagens/bauabertoCorredora.png")
     corredorChave = love.graphics.newImage("imagens/corredorChave.png")
     vazio1 = love.graphics.newImage("imagens/vazio.png")
+    aa = love.graphics.newImage("imagens/vazio.png")
     esqueleto = love.graphics.newImage("imagens/esqueleto.png")
     pergaminho2 = love.graphics.newImage("imagens/pergaminho2.png")
     corote = love.graphics.newImage("imagens/corote.png")
     coroteAgilidade = love.graphics.newImage("imagens/coroteAgilidade.png")
     coroteVida = love.graphics.newImage("imagens/coroteVida.png")
     chave = love.graphics.newImage("imagens/chave.png")
+    fim = love.graphics.newImage("imagens/fim.png")
+    fundo = love.graphics.newImage("imagens/fundo.png")
     heroiW = love.graphics.newImage("imagens/heroiW.png")
     heroiS = love.graphics.newImage("imagens/heroiS.png")
     heroiA = love.graphics.newImage("imagens/heroiA.png")
@@ -367,7 +374,7 @@ function love.draw()
         love.graphics.printf( "Critico:    "..bauEquipamento.stats.critico, 80, 842, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
         love.graphics.printf( "Destreza: "..bauEquipamento.stats.destreza, 80, 865, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
         love.graphics.printf( "X - Para substituir           S - Para sair.", 80, 898, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-
+    
     end
 
     
@@ -402,6 +409,18 @@ function love.draw()
 
             end
         end
+    end
+    if estado == "fundo" then
+        if portal == 4 then
+            estado = "fim"
+            aa = fim
+
+        else
+            aa = fundo
+            love.graphics.draw(aa, 0, 0)
+        end
+    elseif estado == "fim" then
+        love.graphics.draw(aa, 0, 0)
     end
 end
 
@@ -626,57 +645,6 @@ function love.keypressed(key, scancode, isrepeat)
 
     if(estado == "movimento") then
 
-        --[[if posCol + 2 > 28 and posCol -2 >= 1 and posLin + 2 <= 19 and posLin -2 >= 1 then
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-
-        elseif posCol + 2 <= 28 and posCol -2 < 1 and posLin + 2 <= 19 and posLin -2 >= 1 then
-
-        elseif posCol + 2 <= 28 and posCol -2 >= 1 and posLin + 2 > 19 and posLin -2 >= 1 then
-
-        elseif posCol + 2 <= 28 and posCol -2 >= 1 and posLin + 2 <= 19 and posLin -2 < 1 then
-
-        elseif posCol + 2 > 28 and posCol -2 >= 1 and posLin + 2 <= 19 and posLin -2 < 1 then
-
-        elseif posCol + 2 > 28 and posCol -2 >= 1 and posLin + 2 > 19 and posLin -2 >= 1 then
-
-        elseif posCol + 2 <= 28 and posCol -2 < 1 and posLin + 2 <= 19 and posLin -2 < 1 then
-
-        elseif posCol + 2 <= 28 and posCol -2 < 1 and posLin + 2 > 19 and posLin -2 >= 1 then
-
-        elseif posCol + 2 <= 28 and posCol -2 >= 1 and posLin + 2 <= 19 and posLin -2 >= 1 then
-            mapaFog[posLin+2][posCol+2] = "V"
-            mapaFog[posLin][posCol+2] = "V"
-            mapaFog[posLin+1][posCol+2] = "V"
-            --{
-            mapaFog[posLin+2][posCol+1] = "V"
-            mapaFog[posLin][posCol+1] = "V"
-            mapaFog[posLin+1][posCol+1] = "V"
-
-            mapaFog[posLin+2][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin-2][posCol] = "V"
-
-            mapaFog[posLin+2][posCol+2] = "V"
-            mapaFog[posLin][posCol+2] = "V"
-            mapaFog[posLin+1][posCol+2] = "V"
-            mapaFog[posLin+2][posCol+1] = "V"
-            mapaFog[posLin][posCol+1] = "V"
-            mapaFog[posLin+1][posCol+1] = "V"
-            mapaFog[posLin+2][posCol] = "V"
-            mapaFog[posLin][posCol] = "V"
-            mapaFog[posLin-2][posCol] = "V"
-
-        end]]
-        
-
         if key == "d" then
             heroi = heroiD
             espelhaMatriz()
@@ -809,6 +777,7 @@ function love.keypressed(key, scancode, isrepeat)
     elseif(estado == "combate")
     then
         if key == "z" then
+            --estado = "combateAceito"
             while (playerUm.vitalidade > 0) and (monstro.vitalidade > 0) do
                 combatePE()
                 if monstro.vitalidade > 0 then
@@ -825,6 +794,7 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "x" then
             w = SORTEIO(100)
             if w < 50 then
+                --estado = "combateAceito"
                 while (playerUm.vitalidade > 0) and (monstro.vitalidade > 0) do
                     combateEP()
                     if monstro.vitalidade > 0 then
@@ -842,6 +812,8 @@ function love.keypressed(key, scancode, isrepeat)
                 estado = "movimento"
             end   
         end
+    --elseif estado == "combateAceito" then
+
 
     elseif(estado == "vitoria")
     then
@@ -868,6 +840,15 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "r" then
             love.event.quit( "restart" )
         end
+
+    elseif(estado == "fim")
+    then
+        if key == "s" then
+            love.event.quit()
+        
+        elseif key == "r" then
+            love.event.quit( "restart" )
+        end
     
     elseif(estado == "portal")
     then
@@ -879,16 +860,24 @@ function love.keypressed(key, scancode, isrepeat)
                 LoadMap("RPG_lua/Matriz3.txt")
                 LoadMapFog("RPG_lua/Fog.txt")
             end
-
-            estado = "movimento"
+            
             posCol = 2
             posLin = 2
             posColr = 27
             posLinr = 18
             portal = portal + 1
+            estado = "fundo"
         
         elseif key == "s" then
             estado = "movimento"
+        end
+
+    elseif(estado == "fundo")
+    then
+        if key == "return" then
+            aa = vazio1
+            estado = "movimento"
+            img = imgad
         end
 
     elseif(estado == "bauEquipamento")
