@@ -13,6 +13,7 @@ function Blocks:new()
         BA = love.graphics.newImage("imagens/bauAberto.png"),
         K = love.graphics.newImage("imagens/chaveMapa.png"),
         P = love.graphics.newImage("imagens/portal.png"),
+        E = love.graphics.newImage("imagens/entrada.png"),
     
   }
   setmetatable(blocks, Blocks)
