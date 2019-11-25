@@ -1,9 +1,10 @@
 local Enemy = {}
 Enemy.__index = Enemy
 
-function Enemy:new(stats)
+function Enemy:new(stats, img)
   
     local enemy = {
+        img = img,
         stats = stats,
         vitalidade = 200,
 

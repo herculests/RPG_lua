@@ -22,7 +22,6 @@ Player = require 'Player'
 Stats = require 'Stats'
 Equipamento = require 'Equipamento'
 Blocks = require 'Blocks'
-Map = require 'Map'
 Enemy = require 'Enemy'
 
 function LoadMap(Matriz)
@@ -180,10 +179,7 @@ function love.load()
     LoadMap("RPG_lua/Matriz.txt")
     LoadMapFog("RPG_lua/Fog.txt")
 
-    mapa2 = Map:new("Pesadelo", 1, mapa)
-
     blocks = Blocks:new()
-
 
     --                     (ataque, defesa, acuracia, critico, destreza)
     ststsEspada = Stats:new(25, 32, 32, 12, 21)
@@ -193,6 +189,9 @@ function love.load()
     ststsArmMadeira = Stats:new(25, 32, 32, 12, 21)
     ststsArmPano = Stats:new(25, 32, 32, 12, 21)
     ststsMonstro = Stats:new(25, 32, 32, 12, 21)
+    ststsMonstroA = Stats:new(25, 32, 32, 12, 21)
+    ststsMonstroB = Stats:new(25, 32, 32, 12, 21)
+    ststsMonstroC = Stats:new(25, 32, 32, 12, 21)
     ststsVazio = Stats:new(0, 0, 0, 0, 0)
     ststsPlayer = Stats:new(24, 34, 52, 12, 32)
 
@@ -210,9 +209,17 @@ function love.load()
     --                   (arma, armadura, stats)
     playerUm = Player:new(vazio, vazio, ststsPlayer)
 
+    imonstroB = love.graphics.newImage("imagens/monstroB.png")
+    imonstroA = love.graphics.newImage("imagens/monstroA.png")
+    imonstroC = love.graphics.newImage("imagens/monstroC.png")
+    --imonstro3 = love.graphics.newImage("imagens/monstro3.png")
 
-    --                  (stats)
-    monstro = Enemy:new(ststsMonstro)
+
+    --                  (stats,img) 
+    monstroD = Enemy:new(ststsMonstro,imonstro3)
+    monstroA = Enemy:new(ststsMonstroA,imonstroA)
+    monstroB = Enemy:new(ststsMonstroB,imonstroB)
+    monstroC = Enemy:new(ststsMonstroC,imonstroC)
 
     love.keyboard.setKeyRepeat(true)
 
@@ -244,7 +251,6 @@ function love.load()
     portalParede = love.graphics.newImage("imagens/portalParede.png")
     portalaa = love.graphics.newImage("imagens/portalaa.png")
     img = love.graphics.newImage("imagens/imgad.png")
-    monstro3 = love.graphics.newImage("imagens/monstro3.png")
     corredor2 = love.graphics.newImage("imagens/corredor2.png")
     imgburaco = love.graphics.newImage("imagens/imgburaco.png")
     imgburacoa = love.graphics.newImage("imagens/imgburacoa.png")
@@ -624,8 +630,19 @@ function background()
         img = portalParede
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "M") and (matriz[linMaisUm][col] == "X")
     then
+        n = SORTEIO(3)
+        if n == 1 then
+            monstro = monstroA
+        elseif n == 2 then
+            monstro = monstroB
+        elseif n == 3 then
+            monstro = monstroC
+        elseif n == 4 then
+            monstro = monstroD
+        end
+
         love.audio.play(mmonstro)
-        img = monstro3
+        img = monstro.img
         estado = "combate"
 
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "K") and (matriz[linMaisUm][col] == "X")
@@ -683,7 +700,7 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "a" then
             heroi = heroiA
             espelhaMatriz()
-            if (mapa[posLin][posCol - 1] == "Y") or (mapa[posLin][posCol - 1] == "K")
+            if (mapa[posLin][posCol - 1] == "Y") or (mapa[posLin][posCol - 1] == "K") or (mapa[posLin][posCol + 1] == "C")
             then
                 posCol = posCol - 1
                 posColr = posColr +1
@@ -693,7 +710,7 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "s" then
             heroi = heroiS
             espelhaMatriz()
-            if (mapa[posLin + 1][posCol] == "Y") or (mapa[posLin + 1][posCol] == "K")
+            if (mapa[posLin + 1][posCol] == "Y") or (mapa[posLin + 1][posCol] == "K") or (mapa[posLin][posCol + 1] == "C")
             then
                 posLin = posLin + 1
                 posLinr = posLinr - 1
@@ -703,7 +720,7 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "w" then
             heroi = heroiW
             espelhaMatriz()
-            if (mapa[posLin - 1][posCol] == "Y") or (mapa[posLin - 1][posCol] == "K")
+            if (mapa[posLin - 1][posCol] == "Y") or (mapa[posLin - 1][posCol] == "K") or (mapa[posLin][posCol + 1] == "C")
             then
                 posLin = posLin - 1
                 posLinr = posLinr + 1
