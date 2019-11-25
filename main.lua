@@ -9,7 +9,7 @@ local posLin = 2
 local posColr = 27
 local posLinr = 18
 local img
-local estado = "movimento"
+local estado = "menu"
 local vitalidadeTotal = 300
 local xpTotal = 200
 local bauEquipamento
@@ -261,6 +261,21 @@ function love.load()
     bauCorredor = love.graphics.newImage("imagens/bauCorredor.png")
     bauCorredoraa = love.graphics.newImage("imagens/bauCorredoraa.png")
     fog = love.graphics.newImage("imagens/fog.png")
+    menu = love.graphics.newImage("imagens/menu.png")
+    morte = love.graphics.newImage("imagens/morte.png")
+    
+
+    sound = love.audio.newSource("musicas/Deserto.ogg", "stream")
+    mmenu = love.audio.newSource("musicas/mmenu.mp3", "stream")
+    morteFim = love.audio.newSource("musicas/morteFim.wav", "stream")
+    mmonstro = love.audio.newSource("musicas/monstro.wav", "stream")
+    love.audio.play(mmenu)
+    final = love.audio.newSource("musicas/final.ogg", "stream")
+    mportal = love.audio.newSource("musicas/mportal.wav", "stream")
+    pegarItem = love.audio.newSource("musicas/pegarItem.wav", "stream")
+    beber = love.audio.newSource("musicas/beber.wav", "stream")
+    cair = love.audio.newSource("musicas/cair.ogg", "stream")
+    bauAbrindo = love.audio.newSource("musicas/bauAbrindo.wav", "stream")
 
 end
 
@@ -353,17 +368,10 @@ function love.draw()
         love.graphics.printf( "Você esta sem esse tipo de poção!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
         love.graphics.printf( "S - Continuar", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
     
-    elseif estado == "derrota"
+    elseif estado == "portal"
     then
-        love.graphics.printf( "Você perdeu!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - Sair do jogo", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "R - Reiniciar jogo", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.audio.play(mportal)
 
-    elseif estado == "portal" then
-        love.graphics.printf( "Você encontrou um portal!!", 80, 673, 150, "left", 0, 2.4, 2.4, 0, 0, 0, 0 )
-        love.graphics.printf( "C - Para entrar no portal", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - Continuar nesse labirinto", 80, 803, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-    
     elseif estado == "bauEquipamento"
     then
         love.graphics.printf( "Você encontrou um novo equipamento!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
@@ -375,6 +383,10 @@ function love.draw()
         love.graphics.printf( "Destreza: "..bauEquipamento.stats.destreza, 80, 865, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
         love.graphics.printf( "X - Para substituir           S - Para sair.", 80, 898, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
     
+    elseif estado == "menu"
+    then
+        love.graphics.draw(menu, 0, 0)
+
     end
 
     
@@ -410,8 +422,8 @@ function love.draw()
             end
         end
     end
-    if estado == "fundo" then
-        if portal == 4 then
+    if estado == "portal" then
+        if portal == 3 then
             estado = "fim"
             aa = fim
 
@@ -420,7 +432,16 @@ function love.draw()
             love.graphics.draw(aa, 0, 0)
         end
     elseif estado == "fim" then
+        sound:setVolume(0)
+        love.audio.play(final)
         love.graphics.draw(aa, 0, 0)
+
+    elseif estado == "derrota"
+    then
+        sound:setVolume(0)
+        love.audio.play(morteFim)
+        love.graphics.draw(morte, 0, 0)
+
     end
 end
 
@@ -461,6 +482,7 @@ function itensBauArmadura()
         playerUm.pocaoDano = playerUm.pocaoDano + 1
         estado = "movimento"
     end
+    love.audio.play(pegarItem)
     x = SORTEIO(6)
     if x == 1 then
         bauEquipamento = ArmPano
@@ -540,6 +562,7 @@ function background()
         estado = "portal"
     elseif (mapa[posLin][posCol]) == "C" then
         estado = "derrota"
+        love.audio.play(cair)
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "Y") and (matriz[linMaisUm][col] == "X") and 
         (matriz[linMaisUm][colMaisUm] == "X")  and (matriz[linMenosUm][colMaisUm] == "Y")  and (matriz[lin][colMaisDois] == "Y")
      then
@@ -601,6 +624,7 @@ function background()
         img = portalParede
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][colMaisUm] == "M") and (matriz[linMaisUm][col] == "X")
     then
+        love.audio.play(mmonstro)
         img = monstro3
         estado = "combate"
 
@@ -609,6 +633,7 @@ function background()
         img = corredorChave
     elseif (matriz[linMenosUm][col] == "X") and (matriz[lin][col] == "K") and (matriz[linMaisUm][col] == "X")
     then
+        love.audio.play(pegarItem)
         mapa[lin][col] = "Y"
         preencheInventario("K")
         img = imgad
@@ -705,6 +730,7 @@ function love.keypressed(key, scancode, isrepeat)
             for l=1,3,1 do
                 for c=1,4,1 do
                     if matrizInventario[l][c] == "K" then
+                        love.audio.play(bauAbrindo)
                         img = bauabertoCorredor
 
                         if mapa[posLin-1][posCol] == "B" then
@@ -739,6 +765,7 @@ function love.keypressed(key, scancode, isrepeat)
     elseif estado == "inventario" then
         if key == "x" then
             if playerUm.pocaoXp > 0 then
+                love.audio.play(beber)
                 atualizaXp(30)
                 playerUm.pocaoXp = playerUm.pocaoXp - 1
                 removeItem("C")
@@ -748,6 +775,7 @@ function love.keypressed(key, scancode, isrepeat)
 
         elseif key == "v" then
             if playerUm.pocaoVida > 0 then
+                love.audio.play(beber)
                 playerUm.vitalidade = vitalidadeTotal
                 playerUm.pocaoVida = playerUm.pocaoVida - 1
                 removeItem("L")
@@ -757,6 +785,7 @@ function love.keypressed(key, scancode, isrepeat)
 
         elseif key == "a" then
             if playerUm.pocaoDano > 0 then
+                love.audio.play(beber)
                 playerUm.stats.ataque = playerUm.stats.ataque + 30
                 playerUm.pocaoDano = playerUm.pocaoDano -1
                 removeItem("A")
@@ -777,8 +806,8 @@ function love.keypressed(key, scancode, isrepeat)
     elseif(estado == "combate")
     then
         if key == "z" then
-            --estado = "combateAceito"
             while (playerUm.vitalidade > 0) and (monstro.vitalidade > 0) do
+                print("teste")
                 combatePE()
                 if monstro.vitalidade > 0 then
                     combateEP()
@@ -834,6 +863,7 @@ function love.keypressed(key, scancode, isrepeat)
 
     elseif(estado == "derrota")
     then
+        
         if key == "s" then
             love.event.quit()
         
@@ -852,7 +882,8 @@ function love.keypressed(key, scancode, isrepeat)
     
     elseif(estado == "portal")
     then
-        if key == "c" then
+        
+        if key == "return" then
             if portal == 2 then
                 LoadMap("RPG_lua/Matriz2.txt")
                 LoadMapFog("RPG_lua/Fog.txt")
@@ -866,23 +897,18 @@ function love.keypressed(key, scancode, isrepeat)
             posColr = 27
             posLinr = 18
             portal = portal + 1
-            estado = "fundo"
+            aa = vazio1
+            estado = "movimento"
+            img = imgad
         
         elseif key == "s" then
             estado = "movimento"
         end
 
-    elseif(estado == "fundo")
-    then
-        if key == "return" then
-            aa = vazio1
-            estado = "movimento"
-            img = imgad
-        end
-
     elseif(estado == "bauEquipamento")
     then
         if key == "x" then
+            love.audio.play(pegarItem)
             if bauEquipamento.tipo == "arma" then
                 playerUm.arma = bauEquipamento
             else
@@ -892,5 +918,17 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "s" then
             estado = "movimento"
         end
+
+    elseif(estado == "menu")
+    then
+        if key == "return" then
+            
+            estado = "movimento"
+            mmenu:setVolume(0)
+            love.audio.play(sound)
+            sound:setVolume(0.5)
+            menu = vazio1
+        end
+
     end
 end
