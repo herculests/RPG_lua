@@ -226,7 +226,7 @@ function love.load()
     imonstroB = love.graphics.newImage("imagens/monstroB.png")
     imonstroA = love.graphics.newImage("imagens/monstroA.png")
     imonstroC = love.graphics.newImage("imagens/monstroC.png")
-    --imonstro3 = love.graphics.newImage("imagens/monstro3.png")
+    imonstro3 = love.graphics.newImage("imagens/monstro3.png")
 
 
     --                  (stats,img) 

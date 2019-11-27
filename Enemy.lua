@@ -6,7 +6,7 @@ function Enemy:new(stats, img)
     local enemy = {
         img = img,
         stats = stats,
-        vitalidade = 200,
+        vitalidade = 300,
 
         inventario = {
         
