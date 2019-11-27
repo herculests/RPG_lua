@@ -16,6 +16,9 @@ local bauEquipamento
 local portal = 1
 local fundo
 local aa
+local mensagens = " "
+local dano = " "
+local danoAtaque = " "
 
 
 Player = require 'Player'
@@ -145,11 +148,15 @@ function combatePE()
         ataque = plyAtaque * critico - monstro.stats.defesa
         ataque = math.max( ataque,0 )
         monstro.vitalidade = monstro.vitalidade - ataque
-        print("Jogador ataca o inimigo, causando ", ataque," damage")
+        mensagens = "Jogador ataca o inimigo"
+        dano = "causando dano de "
+        danoAtaque = ataque
 
     else
-        print("Jogador erra ataque.")
-    end
+        mensagens = "Jogador erra ataque."
+        dano = " "
+        danoAtaque = " "
+    end    
 
 end
 
@@ -167,11 +174,16 @@ function combateEP()
         ataque = monstro.stats.acuracia * critico - plyDefesa
         ataque = math.max(ataque, 0)
         playerUm.vitalidade = playerUm.vitalidade - ataque
-        print("Inimigo ataca o jogador, causando ", ataque," damage")
+        mensagens = "Inimigo ataca o jogador"
+        dano = "causando dano de "
+        danoAtaque = ataque
 
     else
-        print("Inimigo erra ataque.")
+        mensagens = "Inimigo erra ataque."
+        dano = " "
+        danoAtaque = " "
     end
+    estado = "msg"
 
 end
 
@@ -283,6 +295,10 @@ function love.load()
     cair = love.audio.newSource("musicas/cair.ogg", "stream")
     bauAbrindo = love.audio.newSource("musicas/bauAbrindo.wav", "stream")
 
+    normal =love.graphics.newFont(18)
+    font = love.graphics.newFont("fonte.ttf", 25)
+    love.graphics.setFont(font)
+
 end
 
 function love.draw()
@@ -318,61 +334,124 @@ function love.draw()
     love.graphics.draw(inv, 1413, 628)
     love.graphics.draw(esqueleto, 1010, 710)
 
-    love.graphics.printf("Vitalidade: "..playerUm.vitalidade.." / "..vitalidadeTotal, 930, 40, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf("Poções: "..playerUm.pocaoDano + playerUm.pocaoVida + playerUm.pocaoXp, 930, 80, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf("Nível: "..playerUm.nivel, 1550, 40, 80, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf( "XP: "..playerUm.xp.." / ".. xpTotal, 1550, 80, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.printf("Vitalidade: "..playerUm.vitalidade.." / "..vitalidadeTotal, 933, 43, 300, "left")
+    love.graphics.printf("Pocões: "..playerUm.pocaoDano + playerUm.pocaoVida + playerUm.pocaoXp, 933, 83, 300, "left")
+    love.graphics.printf("Nível: "..playerUm.nivel, 1553, 43, 300, "left")
+    love.graphics.printf( "XP: "..playerUm.xp.." / ".. xpTotal, 1553, 83, 300, "left")
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.printf("Vitalidade: "..playerUm.vitalidade.." / "..vitalidadeTotal, 930, 40, 300, "left")
+    love.graphics.printf("Pocões: "..playerUm.pocaoDano + playerUm.pocaoVida + playerUm.pocaoXp, 930, 80, 300, "left")
+    love.graphics.printf("Nível: "..playerUm.nivel, 1550, 40, 300, "left")
+    love.graphics.printf( "XP: "..playerUm.xp.." / ".. xpTotal, 1550, 80, 300, "left")
 
 
-    love.graphics.printf( "STATUS", 480, 673, 81, "left", 0, 3, 3, 0, 0, 0, 0 )
-    love.graphics.printf( "ARMA    ".."ROUPA     ".."BASE", 730, 683, 300, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf( "Força:       "..playerUm.arma.stats.ataque + playerUm.armadura.stats.ataque + playerUm.stats.ataque.." pts     ".."+"..playerUm.arma.stats.ataque.."        +"..playerUm.armadura.stats.ataque.."            "..playerUm.stats.ataque, 480, 723, 400, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf( "Defesa:     "..playerUm.arma.stats.defesa + playerUm.armadura.stats.defesa + playerUm.stats.defesa.." pts     ".."+"..playerUm.arma.stats.defesa.."        +"..playerUm.armadura.stats.defesa.."            "..playerUm.stats.defesa, 480, 763, 400, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf( "Acurácia:  "..playerUm.arma.stats.acuracia + playerUm.armadura.stats.acuracia + playerUm.stats.acuracia.." pts     ".."+"..playerUm.arma.stats.acuracia.."        +"..playerUm.armadura.stats.acuracia.."            "..playerUm.stats.acuracia, 480, 803, 400, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf( "Destreza:  "..playerUm.arma.stats.destreza + playerUm.armadura.stats.destreza + playerUm.stats.destreza.." pts     ".."+"..playerUm.arma.stats.destreza.."        +"..playerUm.armadura.stats.destreza.."            "..playerUm.stats.destreza, 480, 843, 400, "left", 0, 2, 2, 0, 0, 0, 0 )
-    love.graphics.printf( "Crítico:     "..playerUm.arma.stats.critico + playerUm.armadura.stats.critico + playerUm.stats.critico.." pts     ".."+"..playerUm.arma.stats.critico.."        +"..playerUm.armadura.stats.critico.."            "..playerUm.stats.critico, 480, 883, 400, "left", 0, 2, 2, 0, 0, 0, 0 )
-
+    love.graphics.printf( "STATUS", 482, 675, 400, "left")
+    love.graphics.printf( "ARMA    ".."ROUPA     ".."BASE", 732, 685, 500, "left")
+    love.graphics.printf( "Forca:       "..playerUm.arma.stats.ataque + playerUm.armadura.stats.ataque + playerUm.stats.ataque.." pts            ".."+"..playerUm.arma.stats.ataque.."                 +"..playerUm.armadura.stats.ataque.."                  "..playerUm.stats.ataque, 482, 725, 700, "left")
+    love.graphics.printf( "Defesa:     "..playerUm.arma.stats.defesa + playerUm.armadura.stats.defesa + playerUm.stats.defesa.." pts            ".."+"..playerUm.arma.stats.defesa.."                 +"..playerUm.armadura.stats.defesa.."                  "..playerUm.stats.defesa, 482, 765, 700, "left")
+    love.graphics.printf( "Acurácia:  "..playerUm.arma.stats.acuracia + playerUm.armadura.stats.acuracia + playerUm.stats.acuracia.." pts            ".."+"..playerUm.arma.stats.acuracia.."                 +"..playerUm.armadura.stats.acuracia.."                  "..playerUm.stats.acuracia, 482, 805, 700, "left")
+    love.graphics.printf( "Destreza:  "..playerUm.arma.stats.destreza + playerUm.armadura.stats.destreza + playerUm.stats.destreza.." pts            ".."+"..playerUm.arma.stats.destreza.."                 +"..playerUm.armadura.stats.destreza.."                  "..playerUm.stats.destreza, 482, 845, 700, "left")
+    love.graphics.printf( "Crítico:     "..playerUm.arma.stats.critico + playerUm.armadura.stats.critico + playerUm.stats.critico.." pts             ".."+"..playerUm.arma.stats.critico.."                 +"..playerUm.armadura.stats.critico.."                  "..playerUm.stats.critico, 482, 885, 700, "left")
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.printf( "STATUS", 480, 673, 400, "left")
+    love.graphics.printf( "ARMA    ".."ROUPA     ".."BASE", 730, 683, 500, "left")
+    love.graphics.printf( "Forca:       "..playerUm.arma.stats.ataque + playerUm.armadura.stats.ataque + playerUm.stats.ataque.." pts            ".."+"..playerUm.arma.stats.ataque.."                 +"..playerUm.armadura.stats.ataque.."                  "..playerUm.stats.ataque, 480, 723, 700, "left")
+    love.graphics.printf( "Defesa:     "..playerUm.arma.stats.defesa + playerUm.armadura.stats.defesa + playerUm.stats.defesa.." pts            ".."+"..playerUm.arma.stats.defesa.."                 +"..playerUm.armadura.stats.defesa.."                  "..playerUm.stats.defesa, 480, 763, 700, "left")
+    love.graphics.printf( "Acurácia:  "..playerUm.arma.stats.acuracia + playerUm.armadura.stats.acuracia + playerUm.stats.acuracia.." pts            ".."+"..playerUm.arma.stats.acuracia.."                 +"..playerUm.armadura.stats.acuracia.."                  "..playerUm.stats.acuracia, 480, 803, 700, "left")
+    love.graphics.printf( "Destreza:  "..playerUm.arma.stats.destreza + playerUm.armadura.stats.destreza + playerUm.stats.destreza.." pts            ".."+"..playerUm.arma.stats.destreza.."                 +"..playerUm.armadura.stats.destreza.."                  "..playerUm.stats.destreza, 480, 843, 700, "left")
+    love.graphics.printf( "Crítico:     "..playerUm.arma.stats.critico + playerUm.armadura.stats.critico + playerUm.stats.critico.." pts             ".."+"..playerUm.arma.stats.critico.."                 +"..playerUm.armadura.stats.critico.."                  "..playerUm.stats.critico, 480, 883, 700, "left")
+    love.graphics.setColor(1, 1, 1)
 
     if estado == "movimento"
     then
-        love.graphics.printf( "COMANDOS", 80, 673, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
-        love.graphics.printf( "W - Mover para frente", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - Mover para trás", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "A - Mover para esqueda", 80, 803, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "D - Mover para direita", 80, 843, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "I - Abrir Inventario", 80, 883, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "COMANDOS", 82, 675, 500, "left")
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.printf( "COMANDOS", 80, 673, 500, "left")
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf( "W - Mover para frente", 80, 723, 500, "left")
+        love.graphics.printf( "S - Mover para trás", 80, 763, 500, "left")
+        love.graphics.printf( "A - Mover para esqueda", 80, 803, 500, "left")
+        love.graphics.printf( "D - Mover para direita", 80, 843, 500, "left")
+        love.graphics.printf( "I - Abrir Inventario", 80, 883, 500, "left")
     elseif estado == "inventario"
     then
-        love.graphics.printf( "COMANDOS", 80, 673, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
-        love.graphics.printf( "X - Usar poção de XP", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "V - Usar poção de vida", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "A - Usar poção de ataque", 80, 803, 170, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - Sair do inventario", 80, 843, 170, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "COMANDOS", 82, 675, 500, "left")
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.printf( "COMANDOS", 80, 673, 500, "left")
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf( "X - Usar pocão de XP", 80, 723, 500, "left")
+        love.graphics.printf( "V - Usar pocão de vida", 80, 763, 500, "left")
+        love.graphics.printf( "A - Usar pocão de ataque", 80, 803, 500, "left")
+        love.graphics.printf( "S - Sair do inventario", 80, 843, 500, "left")
     elseif estado == "bau"
     then
-        love.graphics.printf( "COMANDOS", 80, 673, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
-        love.graphics.printf( "K - abrir bau", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - sair ", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "COMANDOS", 82, 675, 500, "left")
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.printf( "COMANDOS", 80, 673, 500, "left")
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf( "K - abrir bau", 80, 723, 500, "left")
+        love.graphics.printf( "S - sair ", 80, 763, 500, "left")
     elseif estado == "bauSemChave"
     then
-        love.graphics.printf( "Você não possui chave para abrir o bau!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - sair para procurar uma chave", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "Você não possui chave para abrir o bau!!", 80, 673, 300, "left")
+        love.graphics.printf( "S - sair para procurar uma chave", 80, 763, 500, "left")
     elseif estado == "combate"
     then
-        love.graphics.printf( "BATALHA!!!", 80, 673, 80, "left", 0, 3, 3, 0, 0, 0, 0 )
-        love.graphics.printf( "Z - Atacar", 80, 723, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "X - Fugir", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "MONSTROOOO!!!", 82, 675, 500, "left")
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.printf( "MONSTROOOO!!!", 80, 673, 500, "left")
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf( "Z - Atacar", 80, 723, 500, "left")
+        love.graphics.printf( "X - Fugir", 80, 763, 500, "left")
+
+    elseif estado == "ataquePlayer"
+    then
+        love.graphics.printf( "BATALHAA!!", 82, 675, 500, "left")
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.printf( "BATALHAA!!", 80, 673, 500, "left")
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf( "K - Avancar turno", 80, 723, 500, "left")
+        love.graphics.printf( "Vitalidade monstro:"..monstro.vitalidade, 80, 883, 500, "left")
+        love.graphics.printf( mensagens, 80, 763, 500, "left")
+        love.graphics.printf( dano, 80, 803, 500, "left")
+        love.graphics.setColor(255, 0, 0)
+        love.graphics.printf( danoAtaque, 290, 803, 500, "left")
+        love.graphics.setColor(1, 1, 1)
+
+    elseif estado == "ataqueMonstro"
+    then
+        love.graphics.printf( "BATALHAA!!", 82, 675, 500, "left")
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.printf( "BATALHAA!!", 80, 673, 500, "left")
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf( "K - Avancar turno", 80, 723, 500, "left")
+        love.graphics.printf( "Vitalidade monstro:"..monstro.vitalidade, 80, 883, 500, "left")
+        love.graphics.printf( mensagens, 80, 763, 500, "left")
+        love.graphics.printf( dano, 80, 803, 500, "left")
+        love.graphics.setColor(255, 0, 0)
+        love.graphics.printf( danoAtaque, 290, 803, 500, "left")
+        love.graphics.setColor(1, 1, 1)
+            
 
     elseif estado == "vitoria"
     then
+        if mapa[posLin-1][posCol] == "M" then
+            mapa[posLin-1][posCol] = "Y"
+        elseif mapa[posLin+1][posCol] == "M" then
+            mapa[posLin+1][posCol] = "Y"
+        elseif mapa[posLin][posCol-1] == "M" then
+            mapa[posLin][posCol-1] = "Y"
+        elseif mapa[posLin][posCol+1] == "M" then
+            mapa[posLin][posCol+1] = "Y"
+        end
         img = imgad
-        love.graphics.printf( "Você ganhou a batalha!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - sair para o labirinto", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "Você ganhou a batalha!!", 80, 673, 500, "left")
     
     elseif estado == "semPocao"
     then
-        love.graphics.printf( "Você esta sem esse tipo de poção!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "S - Continuar", 80, 763, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "Você esta sem esse tipo de pocão!!", 80, 673, 500, "left")
+        love.graphics.printf( "S - Continuar", 80, 763, 500, "left")
     
     elseif estado == "portal"
     then
@@ -380,14 +459,24 @@ function love.draw()
 
     elseif estado == "bauEquipamento"
     then
-        love.graphics.printf( "Você encontrou um novo equipamento!!", 80, 673, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( bauEquipamento.nome, 80, 743, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
-        love.graphics.printf( "Força:      "..bauEquipamento.stats.ataque, 80, 773, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
-        love.graphics.printf( "Defesa:    "..bauEquipamento.stats.defesa, 80, 796, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
-        love.graphics.printf( "Acuracia: "..bauEquipamento.stats.acuracia, 80, 819, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
-        love.graphics.printf( "Critico:    "..bauEquipamento.stats.critico, 80, 842, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
-        love.graphics.printf( "Destreza: "..bauEquipamento.stats.destreza, 80, 865, 150, "left", 0, 1.7, 1.7, 0, 0, 0, 0 )
-        love.graphics.printf( "X - Para substituir           S - Para sair.", 80, 898, 150, "left", 0, 2, 2, 0, 0, 0, 0 )
+        love.graphics.printf( "Você encontrou um novo equipamento!!", 82, 675, 300, "left")
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.printf( "Você encontrou um novo equipamento!!", 80, 673, 300, "left")
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf( bauEquipamento.nome, 80, 743, 500, "left")
+        love.graphics.setColor(255, 0, 0)
+        love.graphics.printf( "Forca:      "..bauEquipamento.stats.ataque, 82, 775, 500, "left")
+        love.graphics.printf( "Defesa:    "..bauEquipamento.stats.defesa, 82, 798, 500, "left")
+        love.graphics.printf( "Acuracia: "..bauEquipamento.stats.acuracia, 82, 821, 500, "left")
+        love.graphics.printf( "Critico:    "..bauEquipamento.stats.critico, 82, 844, 500, "left")
+        love.graphics.printf( "Destreza: "..bauEquipamento.stats.destreza, 82, 867, 500, "left")
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf( "Forca:      "..bauEquipamento.stats.ataque, 80, 773, 500, "left")
+        love.graphics.printf( "Defesa:    "..bauEquipamento.stats.defesa, 80, 796, 500, "left")
+        love.graphics.printf( "Acuracia: "..bauEquipamento.stats.acuracia, 80, 819, 500, "left")
+        love.graphics.printf( "Critico:    "..bauEquipamento.stats.critico, 80, 842, 500, "left")
+        love.graphics.printf( "Destreza: "..bauEquipamento.stats.destreza, 80, 865, 500, "left")
+        love.graphics.printf( "X - Para equipar                                                 S - Para sair.", 80, 898, 500, "left")
     
     elseif estado == "menu"
     then
@@ -700,7 +789,7 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "a" then
             heroi = heroiA
             espelhaMatriz()
-            if (mapa[posLin][posCol - 1] == "Y") or (mapa[posLin][posCol - 1] == "K") or (mapa[posLin][posCol + 1] == "C")
+            if (mapa[posLin][posCol - 1] == "Y") or (mapa[posLin][posCol - 1] == "K") or (mapa[posLin][posCol - 1] == "C")
             then
                 posCol = posCol - 1
                 posColr = posColr +1
@@ -710,7 +799,7 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "s" then
             heroi = heroiS
             espelhaMatriz()
-            if (mapa[posLin + 1][posCol] == "Y") or (mapa[posLin + 1][posCol] == "K") or (mapa[posLin][posCol + 1] == "C")
+            if (mapa[posLin + 1][posCol] == "Y") or (mapa[posLin + 1][posCol] == "K") or (mapa[posLin + 1][posCol] == "C")
             then
                 posLin = posLin + 1
                 posLinr = posLinr - 1
@@ -720,7 +809,7 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "w" then
             heroi = heroiW
             espelhaMatriz()
-            if (mapa[posLin - 1][posCol] == "Y") or (mapa[posLin - 1][posCol] == "K") or (mapa[posLin][posCol + 1] == "C")
+            if (mapa[posLin - 1][posCol] == "Y") or (mapa[posLin - 1][posCol] == "K") or (mapa[posLin - 1][posCol] == "C")
             then
                 posLin = posLin - 1
                 posLinr = posLinr + 1
@@ -823,60 +912,50 @@ function love.keypressed(key, scancode, isrepeat)
     elseif(estado == "combate")
     then
         if key == "z" then
-            while (playerUm.vitalidade > 0) and (monstro.vitalidade > 0) do
-                print("teste")
-                combatePE()
-                if monstro.vitalidade > 0 then
-                    combateEP()
-                end
-            end
-
-            if monstro.vitalidade <= 0 then
-                estado = "vitoria"
-            else
-                estado = "derrota"
-            end
+            estado = "ataquePlayer"
 
         elseif key == "x" then
             w = SORTEIO(100)
             if w < 50 then
-                --estado = "combateAceito"
-                while (playerUm.vitalidade > 0) and (monstro.vitalidade > 0) do
-                    combateEP()
-                    if monstro.vitalidade > 0 then
-                        combatePE()
-                    end
-                end
-
-                if monstro.vitalidade <= 0 then
-                    estado = "vitoria"
-                else
-                    estado = "derrota"
-                end
-            
+                estado = "ataqueMonstro"
+                
             else
                 estado = "movimento"
             end   
         end
-    --elseif estado == "combateAceito" then
 
+    elseif estado == "ataquePlayer" then
+        if key == "k" then
+            combatePE()
 
-    elseif(estado == "vitoria")
+            if monstro.vitalidade <= 0 then
+                atualizaXp(50)
+                estado = "vitoria"
+                mensagens = " "
+                dano = " "
+                danoAtaque = " "
+
+            else
+                estado = "ataqueMonstro"
+            end
+        end
+
+    elseif estado == "ataqueMonstro" then
+        if key == "k" then
+            combateEP()
+
+            if playerUm.vitalidade <= 0 then
+                estado = "derrota"
+
+            else
+                estado = "ataquePlayer"
+            end
+        end
+
+    elseif estado == "vitoria"
     then
          
-        if mapa[posLin-1][posCol] == "M" then
-            mapa[posLin-1][posCol] = "Y"
-        elseif mapa[posLin+1][posCol] == "M" then
-            mapa[posLin+1][posCol] = "Y"
-        elseif mapa[posLin][posCol-1] == "M" then
-            mapa[posLin][posCol-1] = "Y"
-        elseif mapa[posLin][posCol+1] == "M" then
-            mapa[posLin][posCol+1] = "Y"
-        end
-        if key == "s" then
-            atualizaXp(50)
-            estado = "movimento"
-        end
+        estado = "movimento"
 
     elseif(estado == "derrota")
     then
