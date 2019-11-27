@@ -194,18 +194,20 @@ function love.load()
     blocks = Blocks:new()
 
     --                     (ataque, defesa, acuracia, critico, destreza)
-    ststsEspada = Stats:new(25, 32, 32, 12, 21)
-    ststsCajado = Stats:new(25, 32, 32, 12, 21)
-    ststsMachado = Stats:new(25, 32, 32, 12, 21)
-    ststsArmFerro = Stats:new(25, 32, 32, 12, 21)
-    ststsArmMadeira = Stats:new(25, 32, 32, 12, 21)
-    ststsArmPano = Stats:new(25, 32, 32, 12, 21)
-    ststsMonstro = Stats:new(25, 32, 32, 12, 21)
-    ststsMonstroA = Stats:new(25, 32, 32, 12, 21)
-    ststsMonstroB = Stats:new(25, 32, 32, 12, 21)
-    ststsMonstroC = Stats:new(25, 32, 32, 12, 21)
+    ststsEspada = Stats:new(10, 00, 20, 4, 7)
+    ststsCajado = Stats:new(05, 00, 26, 3, 10)
+    ststsMachado = Stats:new(08, 00, 14, 1, 7)
+    ststsArmFerro = Stats:new(3, 13, 13, 3, 6)
+    ststsArmMadeira = Stats:new(2, 7, 13, 2, 9)
+    ststsArmPano = Stats:new(00, 4, 18, 5, 16)
+
+    ststsMonstro = Stats:new(30, 14, 19, 13, 21)
+    ststsMonstroA = Stats:new(25, 11, 22, 12, 16)
+    ststsMonstroB = Stats:new(22, 12, 32, 9, 22)
+    ststsMonstroC = Stats:new(19, 10, 30, 7, 10)
     ststsVazio = Stats:new(0, 0, 0, 0, 0)
-    ststsPlayer = Stats:new(24, 34, 52, 12, 32)
+
+    ststsPlayer = Stats:new(37, 15, 46, 12, 37)
 
 
     --                      (nome, img, stats, tipo)
@@ -332,7 +334,7 @@ function love.draw()
     love.graphics.draw(pergaminho, 0, 613)
     love.graphics.draw(inventario, 1351, 640)
     love.graphics.draw(inv, 1413, 628)
-    love.graphics.draw(esqueleto, 1010, 710)
+    love.graphics.draw(esqueleto, 1080, 710)
 
     love.graphics.setColor(0, 0, 0)
     love.graphics.printf("Vitalidade: "..playerUm.vitalidade.." / "..vitalidadeTotal, 933, 43, 300, "left")
@@ -382,7 +384,7 @@ function love.draw()
         love.graphics.setColor(1, 1, 1)
         love.graphics.printf( "X - Usar pocão de XP", 80, 723, 500, "left")
         love.graphics.printf( "V - Usar pocão de vida", 80, 763, 500, "left")
-        love.graphics.printf( "A - Usar pocão de ataque", 80, 803, 500, "left")
+        love.graphics.printf( "A - Usar pocão de forca", 80, 803, 500, "left")
         love.graphics.printf( "S - Sair do inventario", 80, 843, 500, "left")
     elseif estado == "bau"
     then
@@ -486,9 +488,9 @@ function love.draw()
 
     
 
-    love.graphics.draw(playerUm.arma.imgEquipamento, 1173, 760)
+    love.graphics.draw(playerUm.arma.imgEquipamento, 1243, 760)
 
-    love.graphics.draw(playerUm.armadura.imgEquipamento, 990, 662)
+    love.graphics.draw(playerUm.armadura.imgEquipamento, 1060, 662)
 
     for l=1,3,1
     do
@@ -892,7 +894,7 @@ function love.keypressed(key, scancode, isrepeat)
         elseif key == "a" then
             if playerUm.pocaoDano > 0 then
                 love.audio.play(beber)
-                playerUm.stats.ataque = playerUm.stats.ataque + 30
+                playerUm.stats.ataque = playerUm.stats.ataque + 12
                 playerUm.pocaoDano = playerUm.pocaoDano -1
                 removeItem("A")
             else
